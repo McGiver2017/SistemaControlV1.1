@@ -17,11 +17,14 @@ class ClienteController extends Controller
         return cliente::get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getclientelist(){  
+        $productos = cliente::get();
+        $salida = [];
+        foreach($productos as $producto){
+            $salida[] = ['value' => $producto->id,'text' => $producto->num_doc." : ".$producto->razon_social];
+        }
+        return $salida;
+    }
     public function create()
     {
         //
@@ -68,7 +71,7 @@ class ClienteController extends Controller
      */
     public function edit($id)
     {
-        return cliente::find($id)->first();
+        return cliente::find($id);
 
     }
 

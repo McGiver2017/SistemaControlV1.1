@@ -12,11 +12,15 @@ class ProveedorController extends Controller
         return tabla::get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getproveedorlist(){  
+        $productos = tabla::get();
+        $salida = [];
+        foreach($productos as $producto){
+            $salida[] = ['value' => $producto->id,'text' => $producto->ruc." : ".$producto->razon_social];
+        }
+        return $salida;
+    }
+
     public function create()
     {
         //
@@ -51,7 +55,7 @@ class ProveedorController extends Controller
 
     public function edit($id)
     {
-        return tabla::find($id)->first();
+        return tabla::find($id);
 
     }
 

@@ -32,6 +32,8 @@ import F4_Conductores from './components/view/GestionRegistro/F4_Conductores.vue
 import F5_Vehiculos from './components/view/GestionRegistro/F5_Vehiculos.vue'
 import F6_Productos from './components/view/GestionRegistro/F6_Productos.vue'
 
+import N1_Servicio from './components/view/GestionNegocio/N1_Servicio.vue'
+
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
@@ -87,6 +89,17 @@ const routes = [
                 path: 'productos',
                 name: 'Productos',
                 component: F6_Productos
+            }
+        ]
+    },
+    {
+        path: '/GestionServicio',
+        component: DashBoard,
+        redirect: '/GestionServicio/crearservicio',
+        children: [{
+                path: 'crearservicio',
+                name: 'Crear Servicio',
+                component: N1_Servicio
             }
         ]
     },

@@ -12,11 +12,14 @@ class ProductoController extends Controller
         return tabla::get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function getproductolist(){  
+        $productos = tabla::get();
+        $salida = [];
+        foreach($productos as $producto){
+            $salida[] = ['value' => $producto->cod_producto,'text' => $producto->descripcion];
+        }
+        return $salida;
+    }
     public function create()
     {
         //

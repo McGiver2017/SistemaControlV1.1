@@ -212,6 +212,7 @@ import { Loading } from 'element-ui';
       }, 
       editRow(index, rows) {
         this.operacion = "Editar"
+        console.log("voy a editar a: "+index)
         this.getItem(index)
         $('#WindowsForm').modal('show')  
       },

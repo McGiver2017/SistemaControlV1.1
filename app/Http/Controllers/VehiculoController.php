@@ -11,12 +11,16 @@ class VehiculoController extends Controller
     {
         return tabla::get();
     }
+   
+    public function getvehiculolist(){  
+        $productos = tabla::get();
+        $salida = [];
+        foreach($productos as $producto){
+            $salida[] = ['value' => $producto->id,'text' => $producto->placa." : ".$producto->marca];
+        }
+        return $salida;
+    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
@@ -51,7 +55,7 @@ class VehiculoController extends Controller
 
     public function edit($id)
     {
-        return tabla::find($id)->first();
+        return tabla::find($id);
 
     }
 

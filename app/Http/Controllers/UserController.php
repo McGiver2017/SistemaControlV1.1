@@ -66,7 +66,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        return User::find($id)->first();
+        return User::find($id);
     }
 
     /**

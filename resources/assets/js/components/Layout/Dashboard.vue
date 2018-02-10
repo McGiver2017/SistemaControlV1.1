@@ -125,6 +125,27 @@
                             </ul>
                         </div>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#gestionNegocio">
+                            <i class="nc-icon nc-app"></i>
+                            <p>
+                                Gestion de Servicios
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <div class="collapse" id="gestionNegocio">
+                            <ul class="nav">
+                                <li class="nav-item ">
+                                    <router-link to="/GestionServicio/crearservicio" class="nav-link">
+                                        <span class="sidebar-mini">CS</span>
+                                        <span class="sidebar-normal">Crear Servicio</span>
+                                    </router-link>
+                                </li>
+                                 
+                            </ul>
+                        </div>
+                    </li>
+                    
                 </ul>
             </div>
           </div>
