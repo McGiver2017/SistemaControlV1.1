@@ -6,8 +6,8 @@
         <div class="card-header">
             <div class="row">
                 <div class="col-md-12 ">
-                    <h4 class="title">Lista de Usuarios
-                        <i class="nc-icon nc-simple-add"></i>
+                    <h4 class="title">Datos de Envio
+                        
                     </h4>
                 </div>
             </div>
@@ -77,6 +77,18 @@
                                             </div>
                                         </template>
                                     </el-table-column>
+                                    <el-table-column class="td-number td-quantity" min-width="100" label="operaciones">
+                                        <template slot-scope="props">
+                                                
+                                                 <el-button
+                                                    @click.native.prevent="deleteRow(props.$index, productsTable)"
+                                                    type="text"
+                                                    size="small">
+                                                    <i class="fas fa-times"></i>
+                                                    </el-button>
+                                            
+                                        </template>
+                                    </el-table-column>
                                     <el-table-column label="Total" min-width="100">
                                         <template slot-scope="props">
                                             <strong>
@@ -112,96 +124,50 @@
         <div class="card-header">
             <div class="row">
                 <div class="col-md-12 ">
-                    <h4 class="title">Datos adicionales
-                        <i class="nc-icon nc-simple-add"></i>
-                    </h4>
+                    <h4 class="title">Datos adicionales </h4>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
-                  //cliente
                     <div class="row">
                         <div class="col-md-12">
                             <h5>Seleccione Cliente</h5>
                             <model-select :options="clientes"
                                 v-model="cliente"
-                                placeholder="select client">
+                                placeholder="seleccione cliente">
                             </model-select>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>RUC:</label>
-                                    <p>15697</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Razon Social:</label>
-                                    <p>Empresa de transporte</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <hr>
-                  //proveedor
                     <div class="row">
                         <div class="col-md-12">
-                            <label>seleccione cliente</label>
+                            <h5>Seleccione Proveedor</h5>
                             <model-select :options="proveedores"
                                 v-model="proveedor"
                                 placeholder="seleccione Proveedor">
                             </model-select>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>RUC:</label>
-                                    <p>15697</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Razon Social:</label>
-                                    <p>Empresa de transporte</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                    <hr>
-                    //conductor
+                    <hr>                    
                     <div class="row">
                         <div class="col-md-12">
-                            <label>seleccione cliente</label>
+                            <h5>Seleccione Conductor</h5>
                             <model-select :options="conductores"
                                 v-model="conductor"
                                 placeholder="select Conductor">
                             </model-select>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>RUC:</label>
-                                    <p>15697</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Razon Social:</label>
-                                    <p>Empresa de transporte</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <hr>
-                    //vehiculo
                     <div class="row">
                         <div class="col-md-12">
-                            <label>seleccione cliente</label>
+                            <h5>Seleccione Vehiculo</h5>
                             <model-select :options="vehiculos"
                                 v-model="vehiculo"
                                 placeholder="seleccione Vehiculo">
                             </model-select>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>RUC:</label>
-                                    <p>15697</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Razon Social:</label>
-                                    <p>Empresa de transporte</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,6 +244,9 @@ export default {
     };
   },
   methods: {
+    deleteRow(index, rows) {
+      rows.splice(index, 1);
+    },
     onSelect(item) {
       this.item = item;
       this.product.codigo = item.value;

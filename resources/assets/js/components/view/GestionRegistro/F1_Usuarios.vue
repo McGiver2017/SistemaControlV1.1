@@ -47,13 +47,13 @@
               @click.native.prevent="editRow(scope.row.id, tableUsuarios)"
               type="text"
               size="small">
-              Edit
+              <i class="fas fa-edit"></i> 
             </el-button>
               <el-button
               @click.native.prevent="deleteRow(scope.row.id, tableUsuarios)"
               type="text"
               size="small">
-              Eliminar
+              <i class="fas fa-trash-alt"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -137,9 +137,9 @@
                     </div>
                     <div class="modal-footer">
                       <el-form-item>
-                      <el-button type="primary" @click="submitForm('usuariosForm')" class="btn btn-link btn-simple" >Submit</el-button>
-                      <el-button @click="resetForm('usuariosForm')" class="btn btn-link btn-simple" >Reset</el-button>
-                      <el-button  class="btn btn-link btn-simple" data-dismiss="modal">Close</el-button>                                    
+                      <el-button type="primary" @click="submitForm('usuariosForm')" class="btn btn-link btn-simple" ><i class="fas fa-save"></i></el-button>
+                      <el-button @click="resetForm('usuariosForm')" class="btn btn-link btn-simple" ><i class="fas fa-sync"></i></el-button>
+                      <el-button  class="btn btn-link btn-simple" data-dismiss="modal"><i class="fas fa-times"></i></el-button>                                    
                     </el-form-item>
                     </div>
                 </el-form>
