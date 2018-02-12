@@ -371,7 +371,26 @@ export default {
         }
       });
       return sums;
-    }
+    },
+    env_factura: function () {
+        var url = '/api/factura'
+        axios.post(url,
+          {
+            num_doc: this.cliente.value,
+            productos: this.productsTable,
+            total: this.total_general,
+            gravada: this.gravado,
+            igv: this.igv,
+            usuario_id: 1
+          }).then(response => {
+            console.log(response.data[2])
+            this.$router.push('/electronico/factura/' + response.data[2])
+          }).catch(
+            error => {
+              console.log(error)
+            }
+          )
+      },
   }
 };
 </script>

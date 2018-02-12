@@ -141,6 +141,12 @@
                                         <span class="sidebar-normal">Crear Servicio</span>
                                     </router-link>
                                 </li>
+                                 <li class="nav-item ">
+                                    <router-link to="/GestionServicio/facturas" class="nav-link">
+                                        <span class="sidebar-mini">F</span>
+                                        <span class="sidebar-normal">Facturas</span>
+                                    </router-link>
+                                </li>
                                  
                             </ul>
                         </div>

@@ -33,6 +33,7 @@ import F5_Vehiculos from './components/view/GestionRegistro/F5_Vehiculos.vue'
 import F6_Productos from './components/view/GestionRegistro/F6_Productos.vue'
 
 import N1_Servicio from './components/view/GestionNegocio/N1_Servicio.vue'
+import N2_Facturas from './components/view/GestionNegocio/N2_Facturas.vue'
 
 
 const Foo = { template: '<div>foo</div>' }
@@ -100,6 +101,11 @@ const routes = [
                 path: 'crearservicio',
                 name: 'Crear Servicio',
                 component: N1_Servicio
+            },
+            {
+                path: 'facturas',
+                name: 'Facturas',
+                component: N2_Facturas
             }
         ]
     },

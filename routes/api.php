@@ -22,6 +22,8 @@ Route::resource('proveedor', 'ProveedorController');
 Route::resource('conductor', 'ConductorController');
 Route::resource('vehiculo', 'VehiculoController');
 Route::resource('producto', 'ProductoController');
+Route::resource('factura', 'FacturaController');
+
 
 //---rutas get producto
 Route::get('/getproducto', 'ProductoController@getproductolist');
