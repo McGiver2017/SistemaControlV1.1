@@ -384,7 +384,7 @@ export default {
             usuario_id: 1
           }).then(response => {
             console.log(response.data[2])
-            this.$router.push('/electronico/factura/' + response.data[2])
+            this.$router.push('/GestionServicio/facturas')
           }).catch(
             error => {
               console.log(error)

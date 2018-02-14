@@ -15,5 +15,7 @@ Route::get('/', function () {
     return view('app');
 });
 
+Route::get('/factura', 'FacturaController@pruebaf1');
+Route::get('/factura/{factura_id}', 'FacturaController@generar_factura');
 
 

@@ -14,7 +14,8 @@ class empresa extends Model
         'direccion' => 'JR. TUPAC AMARU MZA. C LOTE. 18',
         'certificado' => '20394061361Cert.pem',
         'origenfactura' => '7',
-        'origenboleta' => '100'
+        'origenboleta' => '100',
+        'ubigeo'=> '250107'
     ];
     }
 }

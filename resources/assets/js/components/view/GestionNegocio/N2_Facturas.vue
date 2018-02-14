@@ -4,7 +4,7 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 ">
-                <h4 class="title">Lista de Productos</h4> 
+                <h4 class="title">Lista de Facturas</h4> 
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               
@@ -24,9 +24,15 @@
           width="50">
         </el-table-column>
         <el-table-column
+          fixed
+          prop="serie"
+          label="Serie"
+          width="100">
+        </el-table-column>
+        <el-table-column
           prop="tipo_doc"
-          label="Tipo de Doc."
-          width="120">
+          label="Cod Doc"
+          width="100">
         </el-table-column>
         <el-table-column
           prop="correlativo"
@@ -47,6 +53,11 @@
           prop="monto_total_venta"
           label="Monto Total"
           width="120">
+        </el-table-column>       
+        <el-table-column
+          prop="estado_factura"
+          label="Estado"
+          width="150">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -54,16 +65,10 @@
           width="120">
           <template slot-scope="scope">
             <el-button
-              @click.native.prevent="editRow(scope.row.id, tabledata)"
+              @click.native.prevent="generar(scope.row.id, tabledata)"
               type="text"
               size="small">
-              <i class="fas fa-edit"></i>
-            </el-button>
-              <el-button
-              @click.native.prevent="deleteRow(scope.row.id, tabledata)"
-              type="text"
-              size="small">
-              <i class="fas fa-trash-alt"></i>
+              Generar
             </el-button>
           </template>
         </el-table-column>
@@ -71,40 +76,6 @@
         </div>
     </div>
     
-    <!-- Mini Modal Crear-->
-    <div class="modal fade modal-primary" id="WindowsForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button> 
-                  <div class="modal">
-                      <i class="nc-icon nc-bulb-63"></i>
-                  </div>
-              </div>                                                       
-                  <el-form :model="Form" status-icon :rules="rules2" ref="Form" label-width="120px" class="demo-ruleForm">
-                    <div class="modal-body text-center">  
-                      <el-form-item label="Codigo de producto" prop="cod_producto">
-                        <el-input v-model="Form.cod_producto"></el-input>
-                      </el-form-item> 
-                      <el-form-item label="Descripción" prop="descripcion">
-                        <el-input v-model="Form.descripcion"></el-input>
-                      </el-form-item> 
-                    </div>
-                    <div class="modal-footer">
-                      <el-form-item>
-                      <el-button type="primary" @click="submitForm('Form')" class="btn btn-link btn-simple" ><i class="fas fa-save"></i></el-button>
-                      <el-button @click="resetForm('Form')" class="btn btn-link btn-simple" ><i class="fas fa-sync"></i></el-button>
-                      <el-button  class="btn btn-link btn-simple" data-dismiss="modal"><i class="fas fa-times"></i></el-button>                                    
-                    </el-form-item>
-                    </div>
-                </el-form>
-          </div>
-      </div>
-    </div>
-    <!--  End Modal -->
 
   </div>
 </template>
@@ -160,14 +131,9 @@ export default {
       this.operacion = "Registrar Nuevo";
       $("#WindowsForm").modal("show");
     },
-    deleteRow(index, rows) {
-      this.mensajeInfo();
-      this.delete(index);
-    },
-    editRow(index, rows) {
-      this.operacion = "Editar";
-      this.getItem(index);
-      $("#WindowsForm").modal("show");
+    generar(index, rows) {
+      alert('voy a generar xml y pdf')
+      location.href ="/factura/"+index;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {

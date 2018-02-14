@@ -28,13 +28,14 @@ class CreateFacturasTable extends Migration
             $table->decimal('monto_total_venta', 8, 2);
             $table->integer('legen_cod')->nullable();
             $table->string('legen_descripcion')->nullable();
-            /*$table->integer('cliente_id')->unsigned();
-            $table->foreign('cliente_id')->references('id')->on('clientes');*/
+            $table->integer('cliente_id')->unsigned()->nullable();
+            $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('crs_id')->nullable();
             $table->string('crs_estado')->nullable();
             $table->string('nombre_pdf')->nullable();
+            $table->string('estado_factura')->default('Creado. XML sin generar');
             $table->timestamps();
 
         });
