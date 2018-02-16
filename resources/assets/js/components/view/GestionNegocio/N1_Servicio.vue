@@ -54,7 +54,7 @@
                                         </template>
                                     </el-table-column>
 
-                                    <el-table-column class="td-price" min-width="100" label="Descripción">
+                                    <el-table-column class="td-price" min-width="120" label="Descripción">
                                         <template slot-scope="props">
                                             <strong>{{props.row.descripcion}}</strong>
                                         </template>
@@ -64,7 +64,7 @@
                                             <small>&euro;</small> {{props.row.costo}}
                                         </template>
                                     </el-table-column>
-                                    <el-table-column class="td-number td-quantity" min-width="100" label="Cantidad">
+                                    <el-table-column class="td-number td-quantity text-center" min-width="100" label="Cantidad">
                                         <template slot-scope="props">
                                             {{props.row.cantidad}}
                                             <div class="btn-group">
@@ -77,16 +77,22 @@
                                             </div>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column class="td-number td-quantity" min-width="100" label="operaciones">
-                                        <template slot-scope="props">
-                                                
-                                                 <el-button
-                                                    @click.native.prevent="deleteRow(props.$index, productsTable)"
-                                                    type="text"
-                                                    size="small">
-                                                    <i class="fas fa-times"></i>
-                                                    </el-button>
-                                            
+                                    <el-table-column class="td-number td-quantity" min-width="120" label="Impuesto">
+                                        <template slot-scope="props">                                                
+                                                <el-radio-group v-model="props.row.tip_afe_igv">
+                                                <el-radio :label="10">C</el-radio>
+                                                <el-radio :label="20">S</el-radio>
+                                                </el-radio-group>                                           
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column class="td-number td-quantity" min-width="100" label="Oper.">
+                                        <template slot-scope="props">                                                
+                                                <el-button
+                                                @click.native.prevent="deleteRow(props.$index, productsTable)"
+                                                type="text"
+                                                size="small">
+                                                <i class="fas fa-times"></i>
+                                                </el-button>                                            
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="Total" min-width="100">
@@ -325,7 +331,9 @@ export default {
         descripcion: this.product.descripcion,
         cantidad: this.product.cantidad,
         costo: this.product.costo,
-        total: this.product.cantidad * this.product.costo
+        total: this.product.cantidad * this.product.costo,
+        tip_afe_igv: 10,
+        igv: 18
       });
       this.product.codigo = "";
       this.product.descripcion = "";
@@ -372,25 +380,25 @@ export default {
       });
       return sums;
     },
-    env_factura: function () {
-        var url = '/api/factura'
-        axios.post(url,
-          {
-            num_doc: this.cliente.value,
-            productos: this.productsTable,
-            total: this.total_general,
-            gravada: this.gravado,
-            igv: this.igv,
-            usuario_id: 1
-          }).then(response => {
-            console.log(response.data[2])
-            this.$router.push('/GestionServicio/facturas')
-          }).catch(
-            error => {
-              console.log(error)
-            }
-          )
-      },
+    env_factura: function() {
+      var url = "/api/factura";
+      axios
+        .post(url, {
+          num_doc: this.cliente.value,
+          productos: this.productsTable,
+          total: this.total_general,
+          gravada: this.gravado,
+          igv: this.igv,
+          usuario_id: 1
+        })
+        .then(response => {
+          console.log(response.data[2]);
+          this.$router.push("/GestionServicio/facturas");
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   }
 };
 </script>

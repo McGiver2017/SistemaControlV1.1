@@ -51,28 +51,73 @@ class FacturaController extends Controller
         $Cfactura = factura::get();
         $empresa = empresa::getDatosEmpresa();
         $Origenemp = $empresa['origenfactura'];
-
-//factura
+        $gravada=0;
+        $exonerada=0;
+        $inafecta=0;
         $factura = new factura;
         $factura->cliente_id = $request->num_doc;
-        $factura->monto_oper_gravadas = $request->gravada;
-        $factura->monto_total_venta = $request->total;
-        $factura->monto_igv = $request->igv;
         $factura->fecha_emision = new DateTime();
         $factura->correlativo = $Origenemp + count($Cfactura) + 1;
+        $factura->monto_oper_gravadas = $gravada;
+        $factura->monto_oper_exonerada = $exonerada;
+        $factura->monto_oper_inafectada = $inafecta;
+        $factura->monto_igv = $gravada * 0.18;
+        $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;
 
-        $data = $factura->save();
+        $factura->save();
+
         foreach ($request->productos as $Jproducto) {
             //producto
-            $detalle = new detalle;
-            $detalle->cantidad = $Jproducto["cantidad"];
-            $detalle->precio_unitario = $Jproducto["costo"];
-            $detalle->valor_unitario = $Jproducto["costo"];
-            $detalle->valor_venta = $Jproducto["cantidad"] * $Jproducto["costo"];
-            $detalle->factura_id = $factura->id;
-            $detalle->producto_id = $Jproducto['codigo'];
-            $data1 = $detalle->save();
+            $variable = $Jproducto["tip_afe_igv"];
+            switch ($variable) {
+                case '10':
+                    $detalle = new detalle;
+                    $detalle->cantidad = $Jproducto["cantidad"];
+                    $detalle->precio_unitario = $Jproducto["costo"];
+                    $detalle->valor_unitario = $Jproducto["costo"] / 1.18;
+                    $detalle->igv = $Jproducto["igv"];
+                    $detalle->valor_venta = $Jproducto["cantidad"] * $detalle->valor_unitario;
+                    $detalle->factura_id = $factura->id;
+                    $detalle->producto_id = $Jproducto['codigo'];
+                    $gravada = $detalle->valor_venta + $gravada;
+                    $data1 = $detalle->save();
+                    break;
+
+                case '20':
+                    $detalle = new detalle;
+                    $detalle->cantidad = $Jproducto["cantidad"];
+                    $detalle->precio_unitario = $Jproducto["costo"];
+                    $detalle->valor_unitario = $Jproducto["costo"];
+                    $detalle->igv = $Jproducto["igv"];
+                    $detalle->valor_venta = $Jproducto["cantidad"] * $Jproducto["costo"];
+                    $detalle->factura_id = $factura->id;
+                    $detalle->producto_id = $Jproducto['codigo'];
+                    $exonerada = $detalle->valor_venta + $exonerada;
+                    $data1 = $detalle->save();
+
+                    break;
+                case '30':
+                    $detalle = new detalle;
+                    $detalle->cantidad = $Jproducto["cantidad"];
+                    $detalle->precio_unitario = $Jproducto["costo"];
+                    $detalle->valor_unitario = $Jproducto["costo"];
+                    $detalle->valor_venta = $Jproducto["cantidad"] * $Jproducto["costo"];
+                    $detalle->factura_id = $factura->id;
+                    $detalle->producto_id = $Jproducto['codigo'];
+                    $inafecta = $detalle->valor_venta + $inafecta;
+                    $data1 = $detalle->save();
+
+                    break;
+            }
+
         }
+        //factura
+        $factura->monto_oper_gravadas = $gravada;
+        $factura->monto_oper_exonerada = $exonerada;
+        $factura->monto_oper_inafectada = $inafecta;
+        $factura->monto_igv = $gravada * 0.18;
+        $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;       
+        $data = $factura->save();
 
         if ($data1 && $data) {
             return 'proceso_finalizado';
@@ -83,15 +128,15 @@ class FacturaController extends Controller
     }
 
     public function generar_factura($factura_id)
-    {     
-        $util = new Util();  
+    {
+        $util = new Util();
         $empresa = empresa::getDatosEmpresa();
-        $factura = factura::find($factura_id);        
+        $factura = factura::find($factura_id);
         $detalles = detalle::where('factura_id', $factura_id)->get();
         // Venta
         $invoice = new Invoice();
         $invoice->setTipoDoc('01')
-            ->setSerie($factura->serie)
+            ->setSerie('FF12')
             ->setCorrelativo($factura->correlativo)
             ->setFechaEmision($factura->created_at) //new DateTime() created_at
             ->setTipoMoneda($factura->tipo_moneda)
@@ -107,11 +152,12 @@ class FacturaController extends Controller
         foreach ($detalles as $det) {
             $item = new SaleDetail();
             $item->setCodProducto($det->producto->cod_producto)
+                ->setCodProdSunat($det->producto->cod_producto)
                 ->setUnidad($det->producto->unidad)
                 ->setCantidad($det->cantidad)
                 ->setDescripcion($det->producto->descripcion)
-                ->setIgv(18)
-                ->setTipAfeIgv('10')
+                ->setIgv($det->igv)
+                ->setTipAfeIgv($det->tip_afe_igv) // 10-20
                 ->setMtoValorVenta($det->valor_venta)
                 ->setMtoValorUnitario($det->valor_unitario)
                 ->setMtoPrecioUnitario($det->precio_unitario);
@@ -126,20 +172,19 @@ class FacturaController extends Controller
         $invoice->setDetails($items)
             ->setLegends([$legend]);
 
-       // Envio a SUNAT.        
+        // Envio a SUNAT.
         $see = $util->getSee(SunatEndpoints::FE_HOMOLOGACION);
         $res = $see->send($invoice);
         Util::writeCdr($invoice, $res->getCdrZip());
 
         $pdf = $util->getPdf($invoice);
-        
+
         $util->showPdf($pdf, $invoice->getName() . '.pdf');
 
-        Util::writeXml($invoice, $see->getFactory()->getLastXml());   
+        Util::writeXml($invoice, $see->getFactory()->getLastXml());
         $factura->estado_factura = "XML Generado";
-$factura->save();
+        $factura->save();
 
-                    
     }
 
     public function pruebaf1()
