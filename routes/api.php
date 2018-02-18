@@ -32,6 +32,9 @@ Route::get('/getproveedor', 'ProveedorController@getproveedorlist');
 Route::get('/getconductor', 'ConductorController@getconductorlist');
 Route::get('/getvehiculo', 'VehiculoController@getvehiculolist');
 
+//en factura
+Route::get('/envfactura/{factura_id}', 'FacturaController@enviarFactura');
+
 
 
 

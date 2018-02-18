@@ -71,6 +71,12 @@ HTML;
 
         return $result;
     }
+    public function getResponseFromCdrJSON(CdrResponse $cdr)
+    {
+        
+        $result = ['id' => $cdr->getId(),'code' => $cdr->getCode(),'description' => $cdr->getDescription()];
+        return $result;
+    }
 
     public static function writeXml(DocumentInterface $document, $xml)
     {

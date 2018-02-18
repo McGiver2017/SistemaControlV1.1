@@ -68,7 +68,13 @@
               @click.native.prevent="generar(scope.row.id, tabledata)"
               type="text"
               size="small">
-              Generar
+              Factura
+            </el-button>
+            <el-button
+              @click.native.prevent="envgenerar(scope.row.id, tabledata)"
+              type="text"
+              size="small">
+              Enviar
             </el-button>
           </template>
         </el-table-column>
@@ -106,15 +112,15 @@ export default {
       fullscreenLoading: false,
       tabledata: [],
       Form: {
-        id: '',
-        cod_producto: '',
-        descripcion: '',
-        unidad: ''
+        id: "",
+        cod_producto: "",
+        descripcion: "",
+        unidad: ""
       },
       rules2: {
         cod_producto: [{ validator: checktext, trigger: "blur" }],
-        descripcion: [{ validator: checktext, trigger: "blur" }],
-        }
+        descripcion: [{ validator: checktext, trigger: "blur" }]
+      }
     };
   },
   methods: {
@@ -132,8 +138,12 @@ export default {
       $("#WindowsForm").modal("show");
     },
     generar(index, rows) {
-      alert('voy a generar xml y pdf')
-      location.href ="/factura/"+index;
+      alert("voy a generar xml y pdf");
+      location.target = "_blank";
+      location.href = "/factura/" + index;
+    },
+    envgenerar(index, rows) {
+      this.envfactura(index)
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -155,7 +165,7 @@ export default {
       axios
         .post(url, {
           cod_producto: this.Form.cod_producto,
-          descripcion: this.Form.descripcion        
+          descripcion: this.Form.descripcion
         })
         .then(response => {
           if (response.data == "Registrado") {
@@ -237,15 +247,33 @@ export default {
         })
         .catch(error => {});
     },
+    envfactura(index) {
+      this.mensajeInfo();
+      var url = "/api/envfactura/" + index;
+      axios
+        .get(url)
+        .then(response => {
+          var msj = response.data
+          if (msj) {
+            var mensaje =  msj.description +" ( Code: "+msj.code+")"
+            this.$notify({
+              title: "Success",
+              message: mensaje,
+              type: "success"
+            });
+          }
+        })
+        .catch(error => {});
+    },
     getItem(id) {
       var url = "/api/producto/" + id + "/edit";
       axios
         .get(url)
         .then(response => {
-          this.Form.id = response.data.id
-          this.Form.cod_producto = response.data.cod_producto
-          this.Form.descripcion = response.data.descripcion
-          this.Form.unidad = response.data.unidad
+          this.Form.id = response.data.id;
+          this.Form.cod_producto = response.data.cod_producto;
+          this.Form.descripcion = response.data.descripcion;
+          this.Form.unidad = response.data.unidad;
         })
         .catch(error => {});
     },

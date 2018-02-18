@@ -51,9 +51,9 @@ class FacturaController extends Controller
         $Cfactura = factura::get();
         $empresa = empresa::getDatosEmpresa();
         $Origenemp = $empresa['origenfactura'];
-        $gravada=0;
-        $exonerada=0;
-        $inafecta=0;
+        $gravada = 0;
+        $exonerada = 0;
+        $inafecta = 0;
         $factura = new factura;
         $factura->cliente_id = $request->num_doc;
         $factura->fecha_emision = new DateTime();
@@ -79,6 +79,7 @@ class FacturaController extends Controller
                     $detalle->valor_venta = $Jproducto["cantidad"] * $detalle->valor_unitario;
                     $detalle->factura_id = $factura->id;
                     $detalle->producto_id = $Jproducto['codigo'];
+                    $detalle->tip_afe_igv = $variable;
                     $gravada = $detalle->valor_venta + $gravada;
                     $data1 = $detalle->save();
                     break;
@@ -92,9 +93,9 @@ class FacturaController extends Controller
                     $detalle->valor_venta = $Jproducto["cantidad"] * $Jproducto["costo"];
                     $detalle->factura_id = $factura->id;
                     $detalle->producto_id = $Jproducto['codigo'];
+                    $detalle->tip_afe_igv = $variable;
                     $exonerada = $detalle->valor_venta + $exonerada;
                     $data1 = $detalle->save();
-
                     break;
                 case '30':
                     $detalle = new detalle;
@@ -104,9 +105,9 @@ class FacturaController extends Controller
                     $detalle->valor_venta = $Jproducto["cantidad"] * $Jproducto["costo"];
                     $detalle->factura_id = $factura->id;
                     $detalle->producto_id = $Jproducto['codigo'];
+                    $detalle->tip_afe_igv = $variable;
                     $inafecta = $detalle->valor_venta + $inafecta;
                     $data1 = $detalle->save();
-
                     break;
             }
 
@@ -116,7 +117,7 @@ class FacturaController extends Controller
         $factura->monto_oper_exonerada = $exonerada;
         $factura->monto_oper_inafectada = $inafecta;
         $factura->monto_igv = $gravada * 0.18;
-        $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;       
+        $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;
         $data = $factura->save();
 
         if ($data1 && $data) {
@@ -126,8 +127,7 @@ class FacturaController extends Controller
         }
 
     }
-
-    public function generar_factura($factura_id)
+    public function generar_invoice($factura_id)
     {
         $util = new Util();
         $empresa = empresa::getDatosEmpresa();
@@ -171,7 +171,65 @@ class FacturaController extends Controller
 
         $invoice->setDetails($items)
             ->setLegends([$legend]);
+        return $invoice;
 
+    }
+    public function verGenerarFactura($factura_id)
+    {
+        $invoice = self::generar_invoice($factura_id);
+        $util = new Util();
+
+        try {
+            $pdf = $util->getPdf($invoice);
+            $util->showPdf($pdf, $invoice->getName() . '.pdf');
+        } catch (Exception $e) {
+            var_dump($e);
+        }
+    }
+    public function enviarFactura($factura_id)
+    {
+        $invoice = self::generar_invoice($factura_id);
+        $util = new Util();
+        $factura = factura::find($factura_id);
+
+        // Envio a SUNAT. demo1
+        $see = $util->getSee(SunatEndpoints::FE_BETA);
+        $res = $see->send($invoice);
+        Util::writeXml($invoice, $see->getFactory()->getLastXml());
+
+        try {
+
+            if ($res->isSuccess()) {
+                //@var $res \Greenter\Model\Response\BillResult
+                $cdr = $res->getCdrResponse();
+                Util::writeCdr($invoice, $res->getCdrZip());
+
+                $factura->estado_factura = "Enviado";
+                $factura->save();
+                return $util->getResponseFromCdrJSON($cdr);
+
+            } else {
+                return var_dump($res->getError());
+
+            }
+
+        } catch (Exception $e) {
+            return $e;
+
+        }
+
+    }
+    public function generar_factura($factura_id)
+    {
+        $invoice = self::generar_invoice($factura_id);
+        /*try {
+        $pdf = $util->getPdf($invoice);
+        $util->showPdf($pdf, $invoice->getName() . '.pdf');
+        } catch (Exception $e) {
+        var_dump($e);
+        }*/
+
+        /*
         // Envio a SUNAT.
         $see = $util->getSee(SunatEndpoints::FE_HOMOLOGACION);
         $res = $see->send($invoice);
@@ -184,6 +242,25 @@ class FacturaController extends Controller
         Util::writeXml($invoice, $see->getFactory()->getLastXml());
         $factura->estado_factura = "XML Generado";
         $factura->save();
+         */
+        // Envio a SUNAT. demo1
+        $see = $util->getSee(SunatEndpoints::FE_HOMOLOGACION);
+
+        $res = $see->send($invoice);
+        Util::writeXml($invoice, $see->getFactory()->getLastXml());
+
+        if ($res->isSuccess()) {
+            //@var $res \Greenter\Model\Response\BillResult
+            $cdr = $res->getCdrResponse();
+            Util::writeCdr($invoice, $res->getCdrZip());
+
+            $factura->estado_factura = $util->getResponseFromCdr($cdr);
+            $factura->save();
+
+        } else {
+            var_dump($res->getError());
+
+        }
 
     }
 
