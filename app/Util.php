@@ -19,6 +19,14 @@ use Illuminate\Support\Facades\Storage;
 
 final class Util
 {
+    
+    public static function getruc(){
+        return "20394061361";
+    }
+    public static function getrzsoc(){
+        return "GRUPO CORPORATIVO ALANIA S.A.C.";
+
+    }
     public static function getClient($id)
     {        
         $cliente = cliente::find($id);
@@ -210,7 +218,7 @@ HTML;
 
     private static function getParametersPdf()
     {
-        $logo = file_get_contents(__DIR__.'/../public/resources/logo.png');
+        $logo = file_get_contents(__DIR__.'/../public/resources/logov1.jpg');
 
         return [
             'system' => [

@@ -5,13 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\UsuarioResource;
+
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
+    public function login(Request $request){
+
+       $usuario = User::where('email',$request->email)->get();
+       if(count($usuario)!==0){
+            $pass=$usuario[0]->password;
+        $passReq = $request->password."";
+        if ($pass==$passReq) {
+           return new UsuarioResource($usuario[0]); 
+        }
+        else{            
+            return ;            
+        }
+       }
+       return ;
+    }
     public function index()
     {
         return User::get();

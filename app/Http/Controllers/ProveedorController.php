@@ -16,7 +16,7 @@ class ProveedorController extends Controller
         $productos = tabla::get();
         $salida = [];
         foreach($productos as $producto){
-            $salida[] = ['value' => $producto->id,'text' => $producto->ruc." : ".$producto->razon_social];
+            $salida[] = ['value' => $producto->id,'text' => $producto->ruc." : ".$producto->razon_social,'direccion'=>$producto->direccion];
         }
         return $salida;
     }

@@ -18,6 +18,8 @@ Route::get('/', function () {
 Route::get('/factura', 'FacturaController@pruebaf1');
 
 Route::get('/factura/{factura_id}', 'FacturaController@verGenerarFactura');
+Route::get('/guia/{factura_id}', 'FacturaController@verGenerarGuia');
+
 
 Route::get('/envfactura/{factura_id}', 'FacturaController@enviarFactura');
 

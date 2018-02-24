@@ -3,16 +3,36 @@
 namespace App\Http\Controllers;
 
 use App;
+use App\balance;
+use App\caja;
+use App\conductor;
 use App\detalle_factura as detalle;
 use App\empresa;
 use App\factura;
+use App\guia;
 use App\producto;
+use App\proveedor;
+use App\transporte;
 use App\Util;
+use App\vehiculo;
 use DateTime;
+
+//despath
+use Greenter\Model\Client\Client;
+use Greenter\Model\Company\Address;
+use Greenter\Model\Despatch\Despatch;
+use Greenter\Model\Despatch\DespatchDetail;
+use Greenter\Model\Despatch\Direction;
+use Greenter\Model\Despatch\Shipment;
+use Greenter\Model\Despatch\Transportist;
+use Greenter\Model\Sale\Document;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Ws\Services\SunatEndpoints;
+
+//balance
+
 use Illuminate\Http\Request;
 use Response;
 
@@ -45,9 +65,57 @@ class FacturaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function guardar_guia(Request $request)
+    {
+        $tranporte = new transporte;
+        $date = new DateTime($request->transporte['fechaEnvio']);
+
+        $tranporte->conductor_id = $request->conductor;
+        $tranporte->vehiculo_id = $request->vehiculo;
+        $tranporte->proveedor_id = $request->proveedor;
+        $tranporte->estado = "En servicio";
+        $tranporte->ingresos = $request->transporte['ingreso'];
+        $tranporte->egresos = 0;
+        $tranporte->fecha_envio = $date->format('Y-m-d H:i:s');
+        $tranporte->modalidad_transporte = $request->ModalidadTraslado;
+        $tranporte->p_partida = $request->transporte['partida'];
+        $tranporte->p_llegada = $request->transporte['llegada'];
+        $tranporte->motivo_traslado = "Venta";
+        $tranporte->save();
+        $empresa = empresa::getDatosEmpresa();
+        $Origenemp = $empresa['origenguia'];
+        $cguia = guia::get();
+        $guia = new guia;
+        $guia->transporte_id = $tranporte->id;
+        $guia->correlativo = $Origenemp + count($cguia);
+        $guia->save();
+
+        //cambio de estado de conductor y vehiculo
+        $conductor = conductor::find($request->conductor);
+        $conductor->estado = "en servicio";
+        $conductor->save();
+        $vehiculo = vehiculo::find($request->vehiculo);
+        $vehiculo->estado = "en servicio";
+        $vehiculo->save();
+        //caja
+        //buscar la caja
+        $caja = caja::where('estado', 'Abierto')->first();
+        //
+        $balancenew = new balance;
+        $balancenew->tipo = 'egreso';
+        $balancenew->caja_id = $caja->id;
+        $balancenew->monto = $tranporte->ingresos;
+        $balancenew->saldo_caja = $caja->monto;
+        $balancenew->saldo_final = $caja->monto - $tranporte->ingresos;
+        $balancenew->vehiculo = $request->vehiculo;
+        $balancenew->save();
+        $caja->monto = $balancenew->saldo_final;
+        $caja->save();
+        return $guia->id;
+
+    }
     public function store(Request $request)
     {
-
         $Cfactura = factura::get();
         $empresa = empresa::getDatosEmpresa();
         $Origenemp = $empresa['origenfactura'];
@@ -56,6 +124,7 @@ class FacturaController extends Controller
         $inafecta = 0;
         $factura = new factura;
         $factura->cliente_id = $request->num_doc;
+        $factura->guia_id = self::guardar_guia($request);
         $factura->fecha_emision = new DateTime();
         $factura->correlativo = $Origenemp + count($Cfactura) + 1;
         $factura->monto_oper_gravadas = $gravada;
@@ -119,13 +188,35 @@ class FacturaController extends Controller
         $factura->monto_igv = $gravada * 0.18;
         $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;
         $data = $factura->save();
-
+        //caja
+        //buscar la caja
+        $caja = caja::where('estado', 'Abierto')->first();
+        //
+        $balancenew = new balance;
+        $balancenew->tipo = 'ingreso';
+        $balancenew->caja_id = $caja->id;
+        $balancenew->monto = $factura->monto_total_venta;
+        $balancenew->saldo_caja = $caja->monto;
+        $balancenew->saldo_final = $caja->monto + $factura->monto_total_venta;
+        $balancenew->vehiculo = $request->vehiculo;
+        $balancenew->save();
+        $caja->monto = $balancenew->saldo_final;
+        $caja->save();
         if ($data1 && $data) {
             return 'proceso_finalizado';
         } else {
             return 'ocurrio un error';
         }
 
+    }
+    private function getItems($detail, $count)
+    {
+        $items = [];
+        for ($i = 0; $i < $count; ++$i) {
+            $items[] = $detail;
+        }
+
+        return $items;
     }
     public function generar_invoice($factura_id)
     {
@@ -172,6 +263,101 @@ class FacturaController extends Controller
         $invoice->setDetails($items)
             ->setLegends([$legend]);
         return $invoice;
+
+    }
+    public function getClient()
+    {
+        $client = new Client();
+        $client->setTipoDoc('6')
+            ->setNumDoc('20000000001')
+            ->setRznSocial('EMPRESA 1')
+            ->setAddress((new Address())
+                    ->setDireccion('JR. NIQUEL MZA. F LOTE. 3 URB.  INDUSTRIAL INFANTAS - LIMA - LIMA -PERU'));
+
+        return $client;
+    }
+    public function Generar_Despatch($factura_id)
+    {
+
+        $factura = factura::find($factura_id);
+        $guia = guia::find($factura->guia_id);
+        $detalles = detalle::where('factura_id', $factura_id)->get();
+        $transporte = transporte::find($guia->transporte_id);
+        $conductor = conductor::find($transporte->conductor_id);
+        $vehiculo = vehiculo::find($transporte->vehiculo_id);
+        //return str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT);
+        $baja = new Document();
+        $baja->setTipoDoc('09')
+            ->setNroDoc('T001-' . str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT));
+
+        $rel = new Document();
+        $rel->setTipoDoc('02') // Tipo: Numero de Orden de Entrega
+            ->setNroDoc('213123');
+
+        $transp = new Transportist();
+        $transp->setTipoDoc('6')
+            ->setNumDoc(Util::getruc())
+            ->setRznSocial(Util::getrzsoc())
+            ->setPlaca($vehiculo->placa)
+            ->setChoferTipoDoc('1')
+            ->setChoferDoc($conductor->dni);
+
+        $envio = new Shipment();
+        $envio->setModTraslado($transporte->modalidad_transporte)
+            ->setCodTraslado($transporte->modalidad_transporte)
+            ->setDesTraslado($transporte->motivo_traslado)
+            ->setFecTraslado(new \DateTime())
+            ->setCodPuerto('123')
+            ->setIndTransbordo(false)
+            ->setPesoTotal(12.5)
+            ->setUndPesoTotal('KGM')
+            ->setNumBultos(0)
+            ->setNumContenedor('XD-2232')
+            ->setLlegada(new Direction('150101', $transporte->p_partida))
+            ->setPartida(new Direction('150203', $transporte->p_llegada))
+            ->setTransportista($transp);
+
+        $despatch = new Despatch();
+        $despatch->setTipoDoc('09')
+            ->setSerie('T001')
+            ->setCorrelativo(str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT))
+            ->setFechaEmision($guia->created_at)
+            ->setCompany(Util::getCompany())
+            ->setDestinatario(Util::getClient($factura->cliente_id))
+            ->setTercero((new Client())
+                    ->setTipoDoc('6')
+                    ->setNumDoc('20000000003')
+                    ->setRznSocial('GREENTER SA'))
+            ->setObservacion('NOTA GUIA')
+            ->setDocBaja($baja)
+            ->setRelDoc($rel)
+            ->setEnvio($envio);
+
+        $items = [];
+        foreach ($detalles as $det) {
+            $item = new DespatchDetail();
+            $item->setCantidad($det->cantidad)
+                ->setUnidad('ZZ')
+                ->setDescripcion($det->producto->descripcion)
+                ->setCodigo($det->producto->cod_producto)
+                ->setCodProdSunat($det->producto->cod_producto);
+            $items[] = $item;
+        }
+        $despatch->setDetails($items);
+
+        return $despatch;
+    }
+    public function verGenerarGuia($factura_id)
+    {
+        $util = new Util();
+
+        $despatch = self::Generar_Despatch($factura_id);
+        try {
+            $pdf = $util->getPdf($despatch);
+            $util->showPdf($pdf, $despatch->getName() . '.pdf');
+        } catch (Exception $e) {
+            var_dump($e);
+        }
 
     }
     public function verGenerarFactura($factura_id)

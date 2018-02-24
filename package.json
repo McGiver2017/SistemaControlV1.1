@@ -22,6 +22,7 @@
     "dependencies": {
         "bootstrap": "^4.0.0",
         "element-ui": "^2.1.0",
+        "vue-cookie": "^1.1.4",
         "vue-router": "^3.0.1",
         "vue-search-select": "^2.5.0"
     }

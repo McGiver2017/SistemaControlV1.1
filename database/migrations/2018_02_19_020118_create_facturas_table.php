@@ -15,6 +15,8 @@ class CreateFacturasTable extends Migration
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('guia_id')->unsigned();
+            $table->foreign('guia_id')->references('id')->on('guias');
             $table->string('tipo_doc')->default('01');
             $table->string('serie')->default('FF11');
             $table->integer('correlativo')->nullable();
@@ -35,7 +37,7 @@ class CreateFacturasTable extends Migration
             $table->string('crs_id')->nullable();
             $table->string('crs_estado')->nullable();
             $table->string('nombre_pdf')->nullable();
-            $table->string('estado_factura')->default('Creado. XML sin generar');
+            $table->string('estado_factura')->default('No enviado');
             $table->timestamps();
 
         });

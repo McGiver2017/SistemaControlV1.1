@@ -23,6 +23,11 @@ Route::resource('conductor', 'ConductorController');
 Route::resource('vehiculo', 'VehiculoController');
 Route::resource('producto', 'ProductoController');
 Route::resource('factura', 'FacturaController');
+Route::resource('transporte', 'TransporteController');
+Route::resource('detalletransporte', 'DetalletransporteController');
+Route::resource('caja', 'CajaController');
+Route::resource('detallecaja', 'BalanceController');
+
 
 
 //---rutas get producto
@@ -34,6 +39,10 @@ Route::get('/getvehiculo', 'VehiculoController@getvehiculolist');
 
 //en factura
 Route::get('/envfactura/{factura_id}', 'FacturaController@enviarFactura');
+
+
+Route::post('/usuarios', 'UserController@login');
+
 
 
 

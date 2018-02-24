@@ -13,7 +13,8 @@ class empresa extends Model
         'nombre_comercial' => '-',
         'direccion' => 'JR. TUPAC AMARU MZA. C LOTE. 18',
         'certificado' => '20394061361Cert.pem',
-        'origenfactura' => '19',
+        'origenfactura' => '42',
+        'origenguia' => '42',
         'origenboleta' => '100',
         'ubigeo'=> '250107'
     ];

@@ -37,12 +37,7 @@
           prop="num_certificado"
           label="Nº de Certificado"
           width="240">
-        </el-table-column>  
-        <el-table-column
-          prop="brevete"
-          label="Nº de Brevete"
-          width="240">
-        </el-table-column>
+        </el-table-column> 
         <el-table-column
           prop="config_vehicular"
           label="Configuracion Vehicular"

@@ -24,8 +24,8 @@
           width="50">
         </el-table-column>
         <el-table-column
-          prop="tipo_doc"
-          label="Documento"
+          prop="num_doc"
+          label="RUC"
           width="120">
         </el-table-column>
         <el-table-column

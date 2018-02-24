@@ -1,43 +1,31 @@
 <template>
       <div class="wrapper">
-          <div class="sidebar" data-color="purple" data-image="/img/sidebar-5.jpg">
+          <div class="sidebar" data-color="black" data-image="/img/sidebar-5.jpg">
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="http://www.creative-tim.com" class="simple-text logo-mini">
-                        Ct
+                        SC
                     </a>
                     <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-                        Creative Tim
+                        SisControl
                     </a>
                 </div>
                 <div class="user">
                     <div class="photo">
-                        <img src="/img/default-avatar.png" />
+                        <img src="/img/usuario.png" />
                     </div>
                     <div class="info ">
                         <a data-toggle="collapse" href="#collapseExample" class="collapsed">
-                            <span>Tania Andrew
+                            <span>{{this.$cookie.get('user')}}
                                 <b class="caret"></b>
                             </span>
                         </a>
                         <div class="collapse" id="collapseExample">
-                            <ul class="nav">
+                            <ul class="nav">                      
                                 <li>
-                                    <a class="profile-dropdown" href="#pablo">
-                                        <span class="sidebar-mini">MP</span>
-                                        <span class="sidebar-normal">My Profile</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="profile-dropdown" href="#pablo">
-                                        <span class="sidebar-mini">EP</span>
-                                        <span class="sidebar-normal">Edit Profile</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="profile-dropdown" href="#pablo">
-                                        <span class="sidebar-mini">S</span>
-                                        <span class="sidebar-normal">Settings</span>
+                                    <a href="#" v-on:click.prevent='logout' class="profile-dropdown">
+                                        <span class="sidebar-mini">L</span>
+                                        <span class="sidebar-normal">Logout</span>
                                     </a>
                                 </li>
                             </ul>
@@ -46,35 +34,10 @@
                 </div>
                 <ul class="nav">
                     <li class="nav-item ">
-                        <a class="nav-link" href="">
+                        <router-link class="nav-link" to="/">
                             <i class="nc-icon nc-chart-pie-35"></i>
                             <p>Dashboard</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#usuarios">
-                            <i class="nc-icon nc-app"></i>
-                            <p>
-                                Usuarios
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="usuarios">
-                            <ul class="nav">
-                                <li class="nav-item ">
-                                    <router-link to="/usuarios" class="nav-link">
-                                        <span class="sidebar-mini">U</span>
-                                        <span class="sidebar-normal">Mostrar</span>
-                                    </router-link>
-                                </li>
-                                <li class="nav-item ">
-                                    <router-link to="/usuarios/create" class="nav-link">
-                                        <span class="sidebar-mini">C</span>
-                                        <span class="sidebar-normal">Crear</span>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </div>
+                        </router-link>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#gestionRegistro">
@@ -116,10 +79,16 @@
                                         <span class="sidebar-normal">Vehiculos</span>
                                     </router-link>
                                 </li>
-                                 <li class="nav-item ">
+                                <li class="nav-item ">
                                     <router-link to="/GestionRegistro/productos" class="nav-link">
                                         <span class="sidebar-mini">P</span>
                                         <span class="sidebar-normal">productos</span>
+                                    </router-link>
+                                </li>
+                                <li class="nav-item ">
+                                    <router-link to="/GestionRegistro/cajas" class="nav-link">
+                                        <span class="sidebar-mini">C</span>
+                                        <span class="sidebar-normal">Cajas</span>
                                     </router-link>
                                 </li>
                             </ul>
@@ -141,10 +110,16 @@
                                         <span class="sidebar-normal">Crear Servicio</span>
                                     </router-link>
                                 </li>
-                                 <li class="nav-item ">
+                                <li class="nav-item ">
                                     <router-link to="/GestionServicio/facturas" class="nav-link">
                                         <span class="sidebar-mini">F</span>
                                         <span class="sidebar-normal">Facturas</span>
+                                    </router-link>
+                                </li>
+                                <li class="nav-item ">
+                                    <router-link to="/GestionServicio/transporte" class="nav-link">
+                                        <span class="sidebar-mini">T</span>
+                                        <span class="sidebar-normal">Transporte</span>
                                     </router-link>
                                 </li>
                                  
@@ -174,61 +149,13 @@
                         <span class="navbar-toggler-bar burger-lines"></span>
                     </button>
                     <div class="collapse navbar-collapse justify-content-end">
-                        <ul class="nav navbar-nav mr-auto">
-                            <form class="navbar-form navbar-left navbar-search-form" role="search">
-                                <div class="input-group">
-                                    <i class="nc-icon nc-zoom-split"></i>
-                                    <input type="text" value="" class="form-control" placeholder="Search...">
-                                </div>
-                            </form>
-                        </ul>
                         <ul class="navbar-nav">
-                            <li class="dropdown nav-item">
-                                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                    <i class="nc-icon nc-planet"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Create New Post</a>
-                                    <a class="dropdown-item" href="#">Manage Something</a>
-                                    <a class="dropdown-item" href="#">Do Nothing</a>
-                                    <a class="dropdown-item" href="#">Submit to live</a>
-                                    <li class="divider"></li>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                </ul>
-                            </li>
-                            <li class="dropdown nav-item">
-                                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                    <i class="nc-icon nc-bell-55"></i>
-                                    <span class="notification">5</span>
-                                    <span class="d-lg-none">Notification</span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Notification 1</a>
-                                    <a class="dropdown-item" href="#">Notification 2</a>
-                                    <a class="dropdown-item" href="#">Notification 3</a>
-                                    <a class="dropdown-item" href="#">Notification 4</a>
-                                    <a class="dropdown-item" href="#">Notification 5</a>
-                                </ul>
-                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="nc-icon nc-bullet-list-67"></i>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="#">
-                                        <i class="nc-icon nc-email-85"></i> Messages
-                                    </a>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="nc-icon nc-umbrella-13"></i> Help Center
-                                    </a>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="nc-icon nc-settings-90"></i> Settings
-                                    </a>
-                                    <div class="divider"></div>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="nc-icon nc-lock-circle-open"></i> Lock Screen
-                                    </a>
-                                    <a href="#" class="dropdown-item text-danger">
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">                                   
+                                    <a href="#" v-on:click.prevent='logout' class="dropdown-item text-danger">
                                         <i class="nc-icon nc-button-power"></i> Log out
                                     </a>
                                 </div>
@@ -253,30 +180,16 @@
                     <nav>
                         <ul class="footer-menu">
                             <li>
-                                <a href="#">
-                                    Home
-                                </a>
+                               <router-link to="/GestionServicio/crearservicio">
+                                        Facturador
+                                </router-link>
                             </li>
-                            <li>
-                                <a href="#">
-                                    Company
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Portfolio
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Blog
-                                </a>
-                            </li>
+                           
                         </ul>
                         <p class="copyright text-center">
-                            ©2016
+                            ©2018
                             
-                            <a href="http://www.creative-tim.com">Creative Tim</a>, made with love for a better web
+                             Sistema de control Facturador
                         </p>
                     </nav>
                 </div>
@@ -287,14 +200,25 @@
       </div>     
 </template>
 <script>
-    export default {
-        data(){
-            return{
-                ejemplo: 'datos'
-            }
-        },
-        mounted() {
-            console.log('Estoy en el menu.')
-        }
+export default {
+  data() {
+    return {
+      ejemplo: "datos"
+    };
+  },
+  methods: {
+    toggleMenu() {
+      this.isClosed = !this.isClosed;
+    },
+    logout() {
+      console.log("saliendo");
+      this.$cookie.set("user", "", 1);
+      location.href = "/" ;
+      
     }
+  },
+  mounted() {
+    console.log("Estoy en el menu.");
+  }
+};
 </script>

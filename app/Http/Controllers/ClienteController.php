@@ -21,7 +21,7 @@ class ClienteController extends Controller
         $productos = cliente::get();
         $salida = [];
         foreach($productos as $producto){
-            $salida[] = ['value' => $producto->id,'text' => $producto->num_doc." : ".$producto->razon_social];
+            $salida[] = ['value' => $producto->id,'text' => $producto->num_doc." : ".$producto->razon_social,'direccion'=>$producto->direccion];
         }
         return $salida;
     }

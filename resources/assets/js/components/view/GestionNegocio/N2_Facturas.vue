@@ -41,12 +41,12 @@
         </el-table-column>
         <el-table-column
           prop="fecha_emision"
-          label="Fecha de Emisión"
+          label="F. de Emisión"
           width="120">
         </el-table-column>  
         <el-table-column
           prop="tipo_moneda"
-          label="Tipo de Moneda"
+          label="Moneda"
           width="120">
         </el-table-column>
         <el-table-column
@@ -62,18 +62,27 @@
         <el-table-column
           fixed="right"
           label="Operaciones"
-          width="120">
+          width="200">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="generar(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm">
               Factura
+            </el-button>
+            <el-button
+              @click.native.prevent="generarguia(scope.row.id, tabledata)"
+              type="text"
+              size="small"
+              class="btn btn-sm">
+              Guia de remision
             </el-button>
             <el-button
               @click.native.prevent="envgenerar(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm">
               Enviar
             </el-button>
           </template>
@@ -138,9 +147,12 @@ export default {
       $("#WindowsForm").modal("show");
     },
     generar(index, rows) {
-      alert("voy a generar xml y pdf");
       location.target = "_blank";
       location.href = "/factura/" + index;
+    },
+    generarguia(index, rows) {
+      location.target = "_blank";
+      location.href = "/guia/" + index;
     },
     envgenerar(index, rows) {
       this.envfactura(index)
