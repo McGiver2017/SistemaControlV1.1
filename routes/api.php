@@ -39,9 +39,15 @@ Route::get('/getvehiculo', 'VehiculoController@getvehiculolist');
 
 //en factura
 Route::get('/envfactura/{factura_id}', 'FacturaController@enviarFactura');
+Route::get('/pagarfactura/{id_factura}', 'FacturaController@cambio_estado_factura_pagado');
 
 
 Route::post('/usuarios', 'UserController@login');
+
+//---rutas peticion sunat---
+Route::get('/getdni/{dni}','SolicitudSunatController@obtener_datos_con_dni');
+Route::get('/getruc/{ruc}','SolicitudSunatController@obtener_datos_con_ruc');
+
 
 
 

@@ -15,7 +15,8 @@ class CreateGuiasTable extends Migration
     {
         Schema::create('guias', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('correlativo')->nullable();
+            $table->string('serie');
+            $table->string('correlativo')->nullable();
             $table->integer('transporte_id')->unsigned();
             $table->foreign('transporte_id')->references('id')->on('transportes');
 

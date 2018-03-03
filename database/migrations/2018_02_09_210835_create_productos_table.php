@@ -15,7 +15,7 @@ class CreateProductosTable extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('cod_producto');
+            $table->string('cod_producto',8)->unique();
             $table->string('descripcion');
             $table->string('unidad')->default('NIU');
             $table->timestamps();

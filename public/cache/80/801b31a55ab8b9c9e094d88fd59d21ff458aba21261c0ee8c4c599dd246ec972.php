@@ -85,14 +85,14 @@ class __TwigTemplate_8c6dfe585b7637ac50ad99ec5d5e6842d003bec7a8d640820fedc83cb03
         echo "</span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <!--<tr>
                                     <td align=\"center\">
                                         Nro. R.I. Emisor: <span>";
         // line 49
         echo $this->getAttribute($this->getAttribute(($context["params"] ?? $this->getContext($context, "params")), "user", array()), "resolucion", array());
         echo "</span>
                                     </td>
-                                </tr>
+                                </tr>-->
                                 </tbody></table>
                         </div>
                     </td>

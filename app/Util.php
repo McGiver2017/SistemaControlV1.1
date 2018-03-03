@@ -102,7 +102,7 @@ HTML;
         file_put_contents(__DIR__ . '/../public/files/R-' . $document->getName() . '.zip', $zip);
     }
 
-    public function getPdf(DocumentInterface $document)
+    public function getPdf(DocumentInterface $document,$mensaje)
     {
         $html = new HtmlReport('', [
             'cache' => __DIR__ . '/../public/cache',
@@ -126,9 +126,8 @@ HTML;
             $render->setBinPath($binPath);
         }
         $hash = $this->getHash($document);
-        $params = self::getParametersPdf();
+        $params = self::getParametersPdfCond($mensaje);
         $params['system']['hash'] = $hash;
-        $params['user']['footer'] = '<div>consulte en <a href="https://github.com/giansalex/sufel">sufel.com</a></div>';
 
         return $render->render($document, $params);
     }
@@ -218,7 +217,7 @@ HTML;
 
     private static function getParametersPdf()
     {
-        $logo = file_get_contents(__DIR__.'/../public/resources/logov1.jpg');
+        $logo = file_get_contents(__DIR__.'/../public/resources/logov2.png');
 
         return [
             'system' => [
@@ -226,11 +225,33 @@ HTML;
                 'hash' => ''
             ],
             'user' => [
-                'resolucion' => '212321',
-                'header' => 'Telf: <b>(056) 123375</b>',
+                'resolucion' => '-----',
+                'header' => 'Cel: <b>945 921 284</b>
+                <br>  RPM.:  <b> # 945 921 284 </b> 
+                <br> Ucayali - Coronel Portillo - Yarinacocha
+                ',
                 'extras' => [
                     ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
-                    ['name' => 'VENDEDOR', 'value' => 'PUCALLPA-LOVERS'],
+                ],
+            ]
+        ];
+    }
+    private static function getParametersPdfCond($mensaje)
+    {
+        $logo = file_get_contents(__DIR__.'/../public/resources/logov2.png');
+
+        return [
+            'system' => [
+                'logo' => $logo,
+                'hash' => ''
+            ],
+            'user' => [
+                'resolucion' => '-----',
+                'header' => '<b>'.$mensaje.'</b><br> Cel: <b>945 921 284</b>
+                <br>  RPM.:  <b> # 945 921 284 </b> 
+                <br> Ucayali - Coronel Portillo - Yarinacocha',
+                'extras' => [
+                    ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
                 ],
             ]
         ];

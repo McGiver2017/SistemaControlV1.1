@@ -14,11 +14,11 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        return cliente::get();
+        return cliente::orderBy('id', 'DESC')->get();
     }
 
     public function getclientelist(){  
-        $productos = cliente::get();
+        $productos = cliente::orderBy('id', 'DESC')->get();
         $salida = [];
         foreach($productos as $producto){
             $salida[] = ['value' => $producto->id,'text' => $producto->num_doc." : ".$producto->razon_social,'direccion'=>$producto->direccion];

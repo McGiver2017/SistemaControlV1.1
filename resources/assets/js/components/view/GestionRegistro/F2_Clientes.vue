@@ -4,7 +4,19 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 ">
-                <h4 class="title">Lista de Clientes</h4> 
+                <div class="card-block">
+                    <h5 class="m-b-10">Gestión de Clientes</h5>
+                    <p class="text-muted m-b-10">Gestiona los datos de los clientes que ofrece tu empresa.</p>
+                    <ul class="breadcrumb-title line">
+                        <li class="breadcrumb-item">
+                            <a href="index.html"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Gestión de Registro</a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Clientes</a>
+                        </li>
+                    </ul>
+                  </div><br> 
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               
@@ -46,13 +58,15 @@
             <el-button
               @click.native.prevent="editRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-edit"></i>
             </el-button>
               <el-button
               @click.native.prevent="deleteRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-trash-alt"></i>
             </el-button>
           </template>
@@ -66,7 +80,7 @@
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Cliente</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button> 
@@ -76,9 +90,18 @@
               </div>                                                       
                   <el-form :model="Form" status-icon :rules="rules2" ref="Form" label-width="120px" class="demo-ruleForm">
                     <div class="modal-body text-center">  
-                      <el-form-item label="Nº de Documento" prop="num_doc">
-                        <el-input v-model="Form.num_doc"></el-input>
-                      </el-form-item> 
+                      <div class="row">
+                        <div class="col-md-8">
+                          <el-form-item label="RUC" prop="num_doc">
+                          <el-input v-model="Form.num_doc"></el-input>
+                        </el-form-item> 
+                        </div>
+                        <div class="col-md-4">
+                          <div v-if="this.Form.num_doc.length==11"><button class="btn btn-default" v-on:click.prevent="getDatosConRuc()">Buscar</button></div><div v-else>11 Caracteres {{this.Form.num_doc.length}}</div>
+                        </div>
+                      </div>
+                      
+                      
                       <el-form-item label="Razón Social" prop="razon_social">
                         <el-input v-model="Form.razon_social"></el-input>
                       </el-form-item> 
@@ -311,6 +334,17 @@ import { Loading } from 'element-ui';
         }).catch(error => {
         })
       },
+       getDatosConRuc () {
+         this.mensajeInfo();
+        var url = '/api/getruc/' + this.Form.num_doc
+        axios.get(url).then(response => {
+          this.Form.razon_social = response.data.razon_social
+          this.Form.direccion = response.data.direccion
+          this.mensajeSucces("Datos cargados");
+        }).catch(error => {
+          this.mensajeError("No se encontro datos con ruc");
+        })
+      },
       getItem (id) {
         var url = '/api/cliente/'+id+'/edit'
         axios.get(url).then(response => {
@@ -332,6 +366,13 @@ import { Loading } from 'element-ui';
         this.$notify({
           title: 'Error',
           message: 'Oh no! ah ocurrido un error :(',
+          type: 'warning'
+        });
+      },
+      mensajeError(mensaje) {
+        this.$notify({
+          title: 'Error',
+          message: mensaje,
           type: 'warning'
         });
       },

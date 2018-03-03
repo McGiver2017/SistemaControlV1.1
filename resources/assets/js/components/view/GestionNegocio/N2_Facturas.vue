@@ -55,7 +55,7 @@
           width="120">
         </el-table-column>       
         <el-table-column
-          prop="estado_factura"
+          prop="estado_pago"
           label="Estado"
           width="150">
         </el-table-column>
@@ -65,25 +65,29 @@
           width="200">
           <template slot-scope="scope">
             <el-button
+              @click.native.prevent="pagar(scope.row.id, tabledata)"
+              type="text"
+              class="btn btn-sm md"
+              rel="tooltip" title="Pagar">
+              <i class="fab fa-cc-amazon-pay"></i>
+            </el-button>
+            <el-button
               @click.native.prevent="generar(scope.row.id, tabledata)"
               type="text"
-              size="small"
-              class="btn btn-sm">
-              Factura
+              size="medium"
+              class="btn btn-sm md"
+              rel="tooltip" title="Ver Factura">
+              <i class="fas fa-list-alt">
+              </i>
             </el-button>
             <el-button
               @click.native.prevent="generarguia(scope.row.id, tabledata)"
               type="text"
               size="small"
-              class="btn btn-sm">
-              Guia de remision
-            </el-button>
-            <el-button
-              @click.native.prevent="envgenerar(scope.row.id, tabledata)"
-              type="text"
-              size="small"
-              class="btn btn-sm">
-              Enviar
+              class="btn btn-sm md"
+              rel="tooltip" title="Ver Guia">
+              <i class="fas fa-list-alt">
+              </i>
             </el-button>
           </template>
         </el-table-column>
@@ -145,6 +149,26 @@ export default {
     agregar() {
       this.operacion = "Registrar Nuevo";
       $("#WindowsForm").modal("show");
+    },
+    pagar(id) {
+      var url = "/api/pagarfactura/" + id;
+      axios
+        .get(url)
+        .then(response => {
+          if (response.data == "Pagado") {
+            this.mensajeSucces("Se realizo el pago correctamente");
+            this.getData();
+            this.loadingTabla = false;
+          } else {
+            this.mensajeError("Ya se realizo el pago");
+            this.loadingTabla = false;
+          }
+        })
+        .catch(e => {
+          this.mensajeWarning();
+          this.loadingTabla = false;
+          this.resetForm("Form");
+        });
     },
     generar(index, rows) {
       location.target = "_blank";
@@ -294,6 +318,13 @@ export default {
         title: "Success",
         message: mensaje,
         type: "success"
+      });
+    },
+    mensajeError(mensaje) {
+      this.$notify({
+        title: "Error",
+        message: mensaje,
+        type: "warning"
       });
     },
     mensajeWarning() {

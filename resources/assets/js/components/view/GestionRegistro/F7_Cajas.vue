@@ -4,6 +4,20 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 "> 
+                <div class="card-block">
+                    <h5 class="m-b-10">Gestión de Caja</h5>
+                    <p class="text-muted m-b-10">Gestiona los datos de la caja que aperturara parax tu empresa.</p>
+                    <ul class="breadcrumb-title line">
+                        <li class="breadcrumb-item">
+                            <a href="index.html"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Gestión de Registro</a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Cajas</a>
+                        </li>
+                    </ul>
+                  </div>
+                  <br>
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               
@@ -25,7 +39,7 @@
         <el-table-column
           prop="descripcion"
           label="Descripción"
-          width="200">
+          width="250">
         </el-table-column>
         <el-table-column
           prop="fecha_apertura"
@@ -56,14 +70,19 @@
               @click.native.prevent="veringresos(scope.row.id, tabledata)"
               type="text"
               size="small"
-              class="btn btn-sm">
-              Ver Ingresos
+              class="btn btn-sm md"
+              rel="tooltip" title="Ver Ingresos">
+              <i class="fas fa-align-justify">
+
+              </i>
             </el-button>
               <el-button
               @click.native.prevent="deleteRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
-              <i class="fas fa-trash-alt"></i>
+              size="small"
+              class="btn btn-sm md"
+              rel="tooltip" title="Cerrar Caja">
+              <i class="fas fa-chevron-circle-down"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -76,7 +95,7 @@
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Caja</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button> 
@@ -103,9 +122,9 @@
                     </div>
                     <div class="modal-footer">
                       <el-form-item>
-                      <el-button type="primary" @click="submitForm('Form')" class="btn btn-link btn-simple" ><i class="fas fa-save"></i></el-button>
-                      <el-button @click="resetForm('Form')" class="btn btn-link btn-simple" ><i class="fas fa-sync"></i></el-button>
-                      <el-button  class="btn btn-link btn-simple" data-dismiss="modal"><i class="fas fa-times"></i></el-button>                                    
+                      <el-button type="primary" @click="submitForm('Form')" class="btn btn-link btn-simple md" ><i class="fas fa-save"></i></el-button>
+                      <el-button @click="resetForm('Form')" class="btn btn-link btn-simple md" ><i class="fas fa-sync"></i></el-button>
+                      <el-button  class="btn btn-link btn-simple md" data-dismiss="modal"><i class="fas fa-times"></i></el-button>                                    
                     </el-form-item>
                     </div>
                 </el-form>

@@ -13,7 +13,8 @@ class ConductorController extends Controller
     }
 
     public function getconductorlist(){  
-        $productos = tabla::get();
+        $productos = tabla::orderBy('id', 'DESC')->get();
+        //except(['price', 'discount'])
         $salida = [];
         foreach($productos as $producto){
             $salida[] = ['value' => $producto->id,'text' => $producto->dni." : ".$producto->nombre." ".$producto->apellidos];

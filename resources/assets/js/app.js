@@ -5,6 +5,7 @@
  */
 
 require('./bootstrap')
+require('./fontawesome')
 
 window.Vue = require('vue')
 import Vue from 'vue'
@@ -46,6 +47,7 @@ import N3_Transporte from './components/view/GestionNegocio/N3_Transporte.vue'
 import N4_DetalleTransporte from './components/view/GestionNegocio/N4_DetalleTransporte.vue'
 
 import Login from './components/view/InSist/Login.vue'
+import Principal from './components/view/InSist/Principal.vue'
 
 const Foo = {
   template: '<div>foo</div>'
@@ -57,6 +59,22 @@ const routes = [{
   path: '/login',
   component: Login
 },
+  {
+    path: '/principal',
+    component: DashBoard,
+    redirect: '/principal/datos',
+    children: [{
+      path: 'datos',
+      name: 'Datos',
+      component: Principal
+    },
+      {
+        path: 'create',
+        name: 'Crear Usuarios',
+        component: ViewUsuariosCreate
+      }
+    ]
+  },
   {
     path: '/usuarios',
     component: DashBoard,
@@ -149,7 +167,7 @@ const routes = [{
   },
   {
     path: '/',
-    component: DashBoard
+    redirect: '/principal/datos'
   }
 ]
 const router = new VueRouter({

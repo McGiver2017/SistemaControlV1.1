@@ -29,7 +29,8 @@ class CreateTransportesTable extends Migration
             $table->foreign('vehiculo_id')->references('id')->on('vehiculos');
             $table->integer('proveedor_id')->unsigned();
             $table->foreign('proveedor_id')->references('id')->on('proveedors');
-
+            $table->string('balance_id');
+            $table->decimal('exceso', 8, 2);
             $table->timestamps();
         });
     }

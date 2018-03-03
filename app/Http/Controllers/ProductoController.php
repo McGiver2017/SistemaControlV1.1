@@ -9,11 +9,11 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        return tabla::get();
+        return tabla::orderBy('id', 'DESC')->get();
     }
 
     public function getproductolist(){  
-        $productos = tabla::get();
+        $productos = tabla::orderBy('id', 'DESC')->get();
         $salida = [];
         foreach($productos as $producto){
             $salida[] = ['value' => $producto->cod_producto,'text' => $producto->descripcion];

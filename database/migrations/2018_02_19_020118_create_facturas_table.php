@@ -19,7 +19,7 @@ class CreateFacturasTable extends Migration
             $table->foreign('guia_id')->references('id')->on('guias');
             $table->string('tipo_doc')->default('01');
             $table->string('serie')->default('FF11');
-            $table->integer('correlativo')->nullable();
+            $table->string('correlativo')->nullable();
             $table->date('fecha_emision');
             $table->string('fecha_vencimiento')->nullable();
             $table->string('tipo_moneda')->default('PEN');
@@ -38,6 +38,7 @@ class CreateFacturasTable extends Migration
             $table->string('crs_estado')->nullable();
             $table->string('nombre_pdf')->nullable();
             $table->string('estado_factura')->default('No enviado');
+            $table->enum('estado_pago', ['Pendiente', 'Pagado'])->default('Pendiente');
             $table->timestamps();
 
         });

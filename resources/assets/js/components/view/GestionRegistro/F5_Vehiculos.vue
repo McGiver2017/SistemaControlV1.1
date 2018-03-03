@@ -4,7 +4,19 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 ">
-                <h4 class="title">Lista de Vehiculos</h4> 
+                <div class="card-block">
+                    <h5 class="m-b-10">Gestión de Vehiculos</h5>
+                    <p class="text-muted m-b-10">Gestiona los datos de los Vehiculos que ofrece tu empresa.</p>
+                    <ul class="breadcrumb-title line">
+                        <li class="breadcrumb-item">
+                            <a href="index.html"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Gestión de Registro</a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Vehiculos</a>
+                        </li>
+                    </ul>
+                  </div><br>
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               
@@ -56,13 +68,15 @@
             <el-button
               @click.native.prevent="editRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-edit"></i>
             </el-button>
               <el-button
               @click.native.prevent="deleteRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-trash-alt"></i>
             </el-button>
           </template>
@@ -76,7 +90,7 @@
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Vehiculo</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button> 

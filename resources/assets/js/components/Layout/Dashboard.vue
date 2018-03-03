@@ -4,10 +4,10 @@
             <div class="sidebar-wrapper">
                 <div class="logo">
                     <a href="http://www.creative-tim.com" class="simple-text logo-mini">
-                        SC
+                        GC
                     </a>
                     <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-                        SisControl
+                        G. C. ALANIA S.A.C.
                     </a>
                 </div>
                 <div class="user">
@@ -34,14 +34,14 @@
                 </div>
                 <ul class="nav">
                     <li class="nav-item ">
-                        <router-link class="nav-link" to="/">
+                        <router-link class="nav-link" to="/principal/datos">
                             <i class="nc-icon nc-chart-pie-35"></i>
                             <p>Dashboard</p>
                         </router-link>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#gestionRegistro">
-                            <i class="nc-icon nc-app"></i>
+                            <i class="nc-icon nc-paper-2"></i>
                             <p>
                                 Gestion de Registro
                                 <b class="caret"></b>
@@ -96,7 +96,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#gestionNegocio">
-                            <i class="nc-icon nc-app"></i>
+                            <i class="nc-icon nc-cart-simple"></i>
                             <p>
                                 Gestion de Servicios
                                 <b class="caret"></b>
@@ -187,9 +187,7 @@
                            
                         </ul>
                         <p class="copyright text-center">
-                            ©2018
-                            
-                             Sistema de control Facturador
+                            ©2018 Grupo Corporativo Alania S.A.C.
                         </p>
                     </nav>
                 </div>

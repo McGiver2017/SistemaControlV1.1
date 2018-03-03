@@ -14,12 +14,19 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <h5>Seleccione Cliente</h5>
                                 <el-select v-model="cliente" filterable placeholder="Select" @change="agregarDireccion" >
                                             <el-option v-for="item in clientes" :key="item.value" :label="item.text" :value="item.value">
                                             </el-option>
                                 </el-select>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Seleccione Tipo de Factura</h5>
+                                <el-select v-model="tipo_factura" filterable placeholder="Select">
+                                            <el-option v-for="item in tipo_facturas" :key="item.value" :label="item.text" :value="item.value">
+                                            </el-option>
+                                        </el-select>
                             </div>
                         </div>
                         <div class="row">
@@ -222,6 +229,14 @@ export default {
   data() {
     return {
       mostrar: false,
+      tipo_facturas: [
+          {
+              value: "1", text:"Serie F001"
+          },
+          {
+              value: "2", text:"Serie F002"
+          }
+      ],
       options: [
         { value: "1", text: "aa" + " - " + "1" },
         { value: "2", text: "ab" + " - " + "2" },
@@ -250,6 +265,10 @@ export default {
         text: ""
       },
       ModalidadTraslado: {
+        value: "",
+        text: ""
+      },
+      tipo_factura: {
         value: "",
         text: ""
       },
@@ -461,7 +480,8 @@ export default {
           vehiculo: this.vehiculo,
           proveedor: this.proveedor,
           ModalidadTraslado: this.ModalidadTraslado,
-          transporte: this.transporte
+          transporte: this.transporte,
+          tipo_factura: this.tipo_factura
         })
         .then(response => {
           console.log(response.data[2]);

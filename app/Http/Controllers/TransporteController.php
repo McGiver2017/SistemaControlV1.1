@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\transporte;
+use App\conductor;
+use App\vehiculo;
 use Illuminate\Http\Request;
 
 class TransporteController extends Controller
@@ -14,7 +16,7 @@ class TransporteController extends Controller
      */
     public function index()
     {
-        $transportes = transporte::get();
+        $transportes = transporte::orderBy('id', 'DESC')->get();
         $data = [];
         foreach ($transportes as $transporte) {
             $item = [
@@ -25,6 +27,7 @@ class TransporteController extends Controller
                 'vehiculo' => $transporte->vehiculo->placa . " " . $transporte->vehiculo->marca,
                 'ingresos' => $transporte->ingresos,
                 'egresos' => $transporte->egresos,
+                'exceso' => $transporte->exceso,
             ];
             $data[] = $item;
         }
@@ -69,6 +72,7 @@ class TransporteController extends Controller
             'vehiculo' => $transporte->vehiculo->placa . " " . $transporte->vehiculo->marca,
             'ingresos' => $transporte->ingresos,
             'egresos' => $transporte->egresos,
+            'exceso' => $transporte->exceso,
         ];
 
         return $item;
@@ -104,8 +108,27 @@ class TransporteController extends Controller
      * @param  \App\transporte  $transporte
      * @return \Illuminate\Http\Response
      */
-    public function destroy(transporte $transporte)
+    public function destroy($id)
     {
-        //
+        $transporte = transporte::find($id);
+        if ( $transporte->estado == "En servicio" ){
+            $transporte->estado = "Finalizado";
+            $delete = $transporte->save();
+            $conductor = conductor::find($transporte->conductor_id);
+            $conductor->estado = "libre";
+            $conductor->save();
+            $vehiculo = vehiculo::find($transporte->vehiculo_id);
+            $vehiculo->estado = "libre";
+            $vehiculo->save();
+            if ($delete) {
+                return 'Eliminado';
+            } else {
+                return 'Ah ocurrido un error';
+            }
+        }
+        else{
+            return 'Cerrado';
+        }
+        
     }
 }

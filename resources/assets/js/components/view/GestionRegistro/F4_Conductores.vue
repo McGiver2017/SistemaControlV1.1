@@ -4,7 +4,19 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 ">
-                <h4 class="title">Lista de Conductores</h4> 
+                <div class="card-block">
+                    <h5 class="m-b-10">Gestión de Conductores</h5>
+                    <p class="text-muted m-b-10">Gestiona los datos de los conductores que ofrece tu empresa.</p>
+                    <ul class="breadcrumb-title line">
+                        <li class="breadcrumb-item">
+                            <a href="index.html"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Gestión de Registro</a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Conductores</a>
+                        </li>
+                    </ul>
+                  </div><br> 
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               
@@ -56,13 +68,15 @@
             <el-button
               @click.native.prevent="editRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-edit"></i>
             </el-button>
               <el-button
               @click.native.prevent="deleteRow(scope.row.id, tabledata)"
               type="text"
-              size="small">
+              size="small"
+              class="btn btn-sm md">
               <i class="fas fa-trash-alt"></i>
             </el-button>
           </template>
@@ -76,7 +90,7 @@
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">{{ this.operacion }} Conductor</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button> 
@@ -86,9 +100,17 @@
               </div>                                                       
                   <el-form :model="Form" status-icon :rules="rules2" ref="Form" label-width="120px" class="demo-ruleForm">
                     <div class="modal-body text-center">  
-                      <el-form-item label="Nº de DNI" prop="dni">
-                        <el-input v-model="Form.dni"></el-input>
-                      </el-form-item> 
+                      <div class="row">
+                        <div class="col-md-8">
+                          <el-form-item label="Nº de DNI" prop="dni">
+                            <el-input v-model="Form.dni"></el-input>
+                          </el-form-item>
+                        </div>
+                        <div class="col-md-4">
+                          <div v-if="this.Form.dni.length==8"><button class="btn btn-default" v-on:click.prevent="getDatosConDNI()">Buscar</button></div><div v-else>Max 8 Caracteres {{this.Form.dni.length}}</div>
+                        </div>
+                      </div>
+                       
                       <el-form-item label="Nombre" prop="nombre">
                         <el-input v-model="Form.nombre"></el-input>
                       </el-form-item> 
@@ -297,6 +319,17 @@ export default {
         })
         .catch(error => {});
     },
+    getDatosConDNI () {
+      this.mensajeInfo();
+      var url = '/api/getdni/' + this.Form.dni
+      axios.get(url).then(response => {
+        this.Form.nombre = response.data.nombres
+        this.Form.apellido = response.data.apellido_paterno + " " + response.data.apellido_materno
+        this.mensajeSucces("Datos cargados");
+      }).catch(error => {
+        this.mensajeError("No se encontro datos con ruc");
+      })
+    },
     mensajeSucces(mensaje) {
       this.$notify({
         title: "Success",
@@ -311,6 +344,13 @@ export default {
         type: "warning"
       });
     },
+    mensajeError(mensaje) {
+        this.$notify({
+          title: 'Error',
+          message: mensaje,
+          type: 'warning'
+        });
+      },
     mensajeInfo() {
       this.$notify.info({
         title: "Info",

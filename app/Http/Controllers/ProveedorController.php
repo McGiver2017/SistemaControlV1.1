@@ -9,11 +9,11 @@ class ProveedorController extends Controller
 {
    public function index()
     {
-        return tabla::get();
+        return tabla::orderBy('id', 'DESC')->get();
     }
 
     public function getproveedorlist(){  
-        $productos = tabla::get();
+        $productos = tabla::orderBy('id', 'DESC')->get();
         $salida = [];
         foreach($productos as $producto){
             $salida[] = ['value' => $producto->id,'text' => $producto->ruc." : ".$producto->razon_social,'direccion'=>$producto->direccion];

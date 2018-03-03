@@ -4,7 +4,19 @@
         <div class="card-header">
             <div class="row">
               <div class="col-md-12 ">
-                <h4 class="title">Lista de Usuarios</h4> 
+                <div class="card-block">
+                    <h5 class="m-b-10">Gestión de Usuarios</h5>
+                    <p class="text-muted m-b-10">Gestiona los datos de los usuarios que ofrece tu empresa.</p>
+                    <ul class="breadcrumb-title line">
+                        <li class="breadcrumb-item">
+                            <a href="index.html"> <i class="fa fa-home"></i> </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Gestión de Registro</a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#!">Usuarios</a>
+                        </li>
+                    </ul>
+                  </div><br> 
                   <button class="btn btn-info btn-fill btn-wd" @click="agregar()">
                   Agregar
                 </button>               

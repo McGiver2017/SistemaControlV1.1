@@ -16,6 +16,7 @@ use App\transporte;
 use App\Util;
 use App\vehiculo;
 use DateTime;
+use NumeroALetras;
 
 //despath
 use Greenter\Model\Client\Client;
@@ -46,7 +47,7 @@ class FacturaController extends Controller
      */
     public function index()
     {
-        return factura::get();
+        return factura::orderBy('id', 'DESC')->get();
     }
 
     /**
@@ -81,13 +82,17 @@ class FacturaController extends Controller
         $tranporte->p_partida = $request->transporte['partida'];
         $tranporte->p_llegada = $request->transporte['llegada'];
         $tranporte->motivo_traslado = "Venta";
+        $tranporte->balance_id = 0;
+        $tranporte->exceso = 0;
         $tranporte->save();
         $empresa = empresa::getDatosEmpresa();
         $Origenemp = $empresa['origenguia'];
+        $serie = $empresa['serieguia'];
         $cguia = guia::get();
         $guia = new guia;
         $guia->transporte_id = $tranporte->id;
-        $guia->correlativo = $Origenemp + count($cguia);
+        $guia->serie = $serie;
+        $guia->correlativo = str_pad($Origenemp + count($cguia), 5, "0", STR_PAD_LEFT);
         $guia->save();
 
         //cambio de estado de conductor y vehiculo
@@ -107,10 +112,17 @@ class FacturaController extends Controller
         $balancenew->monto = $tranporte->ingresos;
         $balancenew->saldo_caja = $caja->monto;
         $balancenew->saldo_final = $caja->monto - $tranporte->ingresos;
-        $balancenew->vehiculo = $request->vehiculo;
+        $balancenew->tipo_responsable = "vehiculo";
+        $balancenew->responsable = $vehiculo->placa;
+        $balancenew->tipo_documento = "Otros";
+        $balancenew->numero_documento = "Transporte id: ".$tranporte->id;
+        $balancenew->monto_declarado = 0;
+        $balancenew->estado = "Egreso no declarado"; 
         $balancenew->save();
         $caja->monto = $balancenew->saldo_final;
         $caja->save();
+        $tranporte->balance_id = $balancenew->id;
+        $tranporte->save();
         return $guia->id;
 
     }
@@ -118,15 +130,27 @@ class FacturaController extends Controller
     {
         $Cfactura = factura::get();
         $empresa = empresa::getDatosEmpresa();
-        $Origenemp = $empresa['origenfactura'];
+        $Origenemp;
+        $serie;
+        if ( $request->tipo_factura == 1 ){
+            $serie = $empresa['seriefactura1'];
+            $Origenemp = $empresa['origenfactura1'];  
+            $Cfactura = factura::where('serie',$serie)->get();  
+        }
+        else{
+            $serie = $empresa['seriefactura2'];
+            $Origenemp = $empresa['origenfactura2'];
+            $Cfactura = factura::where('serie',$serie)->get(); 
+        }
         $gravada = 0;
         $exonerada = 0;
         $inafecta = 0;
         $factura = new factura;
         $factura->cliente_id = $request->num_doc;
         $factura->guia_id = self::guardar_guia($request);
+        $factura->serie = $serie;
         $factura->fecha_emision = new DateTime();
-        $factura->correlativo = $Origenemp + count($Cfactura) + 1;
+        $factura->correlativo = str_pad($Origenemp + count($Cfactura), 5, "0", STR_PAD_LEFT);
         $factura->monto_oper_gravadas = $gravada;
         $factura->monto_oper_exonerada = $exonerada;
         $factura->monto_oper_inafectada = $inafecta;
@@ -147,7 +171,8 @@ class FacturaController extends Controller
                     $detalle->igv = $Jproducto["igv"];
                     $detalle->valor_venta = $Jproducto["cantidad"] * $detalle->valor_unitario;
                     $detalle->factura_id = $factura->id;
-                    $detalle->producto_id = $Jproducto['codigo'];
+                    $producto = producto::where('cod_producto',$Jproducto['codigo'])->first();
+                    $detalle->producto_id = $producto->id;
                     $detalle->tip_afe_igv = $variable;
                     $gravada = $detalle->valor_venta + $gravada;
                     $data1 = $detalle->save();
@@ -187,27 +212,53 @@ class FacturaController extends Controller
         $factura->monto_oper_inafectada = $inafecta;
         $factura->monto_igv = $gravada * 0.18;
         $factura->monto_total_venta = $gravada + $exonerada + $inafecta + $factura->monto_igv;
+        $factura->legen_cod = 1000;
+        $factura->legen_descripcion = NumeroALetras::convertir($factura->monto_total_venta, 'soles', 'centimos');
         $data = $factura->save();
         //caja
-        //buscar la caja
-        $caja = caja::where('estado', 'Abierto')->first();
+        
         //
-        $balancenew = new balance;
-        $balancenew->tipo = 'ingreso';
-        $balancenew->caja_id = $caja->id;
-        $balancenew->monto = $factura->monto_total_venta;
-        $balancenew->saldo_caja = $caja->monto;
-        $balancenew->saldo_final = $caja->monto + $factura->monto_total_venta;
-        $balancenew->vehiculo = $request->vehiculo;
-        $balancenew->save();
-        $caja->monto = $balancenew->saldo_final;
-        $caja->save();
+        
         if ($data1 && $data) {
             return 'proceso_finalizado';
         } else {
             return 'ocurrio un error';
         }
 
+    }
+    public function cambio_estado_factura_pagado($id_factura){
+        //buscar la caja
+        $factura = factura::find($id_factura);
+        if ($factura->estado_pago=="Pendiente"){
+            $caja = caja::where('estado', 'Abierto')->first();
+            $factura = factura::find($id_factura);
+            $guia = guia::find($factura->guia_id);
+            $transporte = transporte::find($guia->transporte_id);
+            $vehiculo = vehiculo::find($transporte->vehiculo_id);
+            $balancenew = new balance;
+            $balancenew->tipo = 'ingreso';
+            $balancenew->caja_id = $caja->id;
+            $balancenew->monto = $factura->monto_total_venta;
+            $balancenew->saldo_caja = $caja->monto;
+            $balancenew->saldo_final = $caja->monto + $factura->monto_total_venta;
+            $balancenew->tipo_responsable = "vehiculo";
+            $balancenew->responsable = $vehiculo->placa;   
+            $balancenew->monto_declarado = $factura->monto_total_venta;
+            $balancenew->estado = "Ingreso declarado";      
+            //tipo de doc
+            $balancenew->tipo_documento = "Factura";
+            $balancenew->numero_documento = $factura->serie."-".$factura->correlativo;
+            $balancenew->save();
+            $caja->monto = $balancenew->saldo_final;
+            $caja->save();
+            $factura->estado_pago = "Pagado";
+            $factura->save();
+            return "Pagado";
+        }
+        else{
+            return 'Ya se pago';
+        }
+       
     }
     private function getItems($detail, $count)
     {
@@ -227,7 +278,7 @@ class FacturaController extends Controller
         // Venta
         $invoice = new Invoice();
         $invoice->setTipoDoc('01')
-            ->setSerie('FF12')
+            ->setSerie($factura->serie)
             ->setCorrelativo($factura->correlativo)
             ->setFechaEmision($factura->created_at) //new DateTime() created_at
             ->setTipoMoneda($factura->tipo_moneda)
@@ -257,11 +308,14 @@ class FacturaController extends Controller
 
         //$letras = NumeroALetras::convertir($factura->monto_total_venta, 'soles', 'centimos');
         $legend = new Legend();
-        $legend->setCode('1000') //NumeroALetras::convertir($factura->monto_total_venta
-            ->setValue('SON 10 CON 00/100 SOLES');
+        $legend->setCode($factura->legen_cod) //NumeroALetras::convertir($factura->monto_total_venta
+            ->setValue($factura->legen_descripcion);
+        $legend2 = new Legend();
+        $legend2->setCode('1002')
+            ->setValue('SERVICIO DE TRANSPORTE');
 
         $invoice->setDetails($items)
-            ->setLegends([$legend]);
+            ->setLegends([$legend,$legend2]);
         return $invoice;
 
     }
@@ -288,7 +342,7 @@ class FacturaController extends Controller
         //return str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT);
         $baja = new Document();
         $baja->setTipoDoc('09')
-            ->setNroDoc('T001-' . str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT));
+            ->setNroDoc($guia->serie.'-' . $guia->correlativo);
 
         $rel = new Document();
         $rel->setTipoDoc('02') // Tipo: Numero de Orden de Entrega
@@ -320,7 +374,7 @@ class FacturaController extends Controller
         $despatch = new Despatch();
         $despatch->setTipoDoc('09')
             ->setSerie('T001')
-            ->setCorrelativo(str_pad($guia->correlativo, 5, "0", STR_PAD_LEFT))
+            ->setCorrelativo($guia->correlativo)
             ->setFechaEmision($guia->created_at)
             ->setCompany(Util::getCompany())
             ->setDestinatario(Util::getClient($factura->cliente_id))
@@ -351,9 +405,18 @@ class FacturaController extends Controller
     {
         $util = new Util();
 
+        $factura = factura::find($factura_id);
+        $mensaje;
+        if ($factura->serie == "FA001"){
+            $mensaje = "<b>DISTRIBUIDOR MINORISTA</b><br>
+            VENTA DE COMBUSTIBLE";
+        }else{
+            $mensaje = "<b>TRANSPORTE DE COMBUSTIBLE Y CARGA EN GENERAL</b>
+            <br>A NIVEL LOCAL Y NACIONAL";
+        }
         $despatch = self::Generar_Despatch($factura_id);
         try {
-            $pdf = $util->getPdf($despatch);
+            $pdf = $util->getPdf($despatch,$mensaje);
             $util->showPdf($pdf, $despatch->getName() . '.pdf');
         } catch (Exception $e) {
             var_dump($e);
@@ -364,9 +427,18 @@ class FacturaController extends Controller
     {
         $invoice = self::generar_invoice($factura_id);
         $util = new Util();
+        $factura = factura::find($factura_id);
+        $mensaje;
+        if ($factura->serie == "FA001"){
+            $mensaje = "<b>DISTRIBUIDOR MINORISTA</b><br>
+            VENTA DE COMBUSTIBLE";
+        }else{
+            $mensaje = "<b>TRANSPORTE DE COMBUSTIBLE Y CARGA EN GENERAL</b>
+            <br>A NIVEL LOCAL Y NACIONAL";
+        }
 
         try {
-            $pdf = $util->getPdf($invoice);
+            $pdf = $util->getPdf($invoice,$mensaje);
             $util->showPdf($pdf, $invoice->getName() . '.pdf');
         } catch (Exception $e) {
             var_dump($e);

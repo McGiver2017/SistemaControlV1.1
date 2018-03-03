@@ -9,11 +9,11 @@ class VehiculoController extends Controller
 {
     public function index()
     {
-        return tabla::get();
+        return tabla::orderBy('id', 'DESC')->get();
     }
    
     public function getvehiculolist(){  
-        $productos = tabla::get();
+        $productos = tabla::orderBy('id', 'DESC')->get();
         $salida = [];
         foreach($productos as $producto){
             $salida[] = ['value' => $producto->id,'text' => $producto->placa." : ".$producto->marca];

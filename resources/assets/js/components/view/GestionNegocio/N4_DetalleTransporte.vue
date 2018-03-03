@@ -14,6 +14,7 @@
               <div class="col-md-6">
                 <h5>Monto Inicial: S/. {{ this.datos.ingresos }}</h5>
                 <h5>Egresos: S/. {{ this.datos.egresos }}</h5>
+                <h5>Exceso: S/. {{ this.datos.exceso }}</h5>
               </div>
             </div>
         </div>
@@ -170,14 +171,14 @@ export default {
       var url = "/api/detalletransporte";
       axios
         .post(url, {
-          transporte_id: 1,
+          transporte_id: this.$route.params.id,
           num_doc: this.Form.num_doc,
           descripcion: this.Form.descripcion,
           monto: this.Form.monto
         })
         .then(response => {
           if (response.data == "Registrado") {
-            this.mensajeSucces("Se registro correctamente :)");
+            this.mensajeSucces("Se registro correctamente");
             (this.Form.num_doc = ""),
               (this.Form.descripcion = ""),
               (this.Form.monto = "");
@@ -185,8 +186,18 @@ export default {
             this.getDatos();
             this.loadingTabla = false;
           } else {
-            this.mensajeWarning();
-            this.loadingTabla = false;
+            if ( response.data == "Exceso"){
+              this.mensajeSucces("Se registro Exceso");
+              (this.Form.num_doc = ""),
+                (this.Form.descripcion = ""),
+                (this.Form.monto = "");
+              this.getData();
+              this.getDatos();
+              this.loadingTabla = false;
+            }else{
+              this.mensajeWarning();
+              this.loadingTabla = false;
+            }
           }
         })
         .catch(e => {
@@ -247,7 +258,7 @@ export default {
         });
     },
     getDatos() {
-      var url = "/api/transporte/1";
+      var url = "/api/transporte/"+this.$route.params.id;
       axios
         .get(url)
         .then(response => {
@@ -257,7 +268,7 @@ export default {
         .catch(error => {});
     },
     getData() {
-      var url = "/api/detalletransporte/1";
+      var url = "/api/detalletransporte/"+this.$route.params.id;
       axios
         .get(url)
         .then(response => {

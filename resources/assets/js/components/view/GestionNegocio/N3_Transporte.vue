@@ -53,14 +53,23 @@
         <el-table-column
           fixed="right"
           label="Operaciones"
-          width="200">
+          width="120">
           <template slot-scope="scope">
             <el-button
               @click.native.prevent="veringresos(scope.row.id, tabledata)"
               type="text"
               size="small"
-              class="btn btn-sm">
-              Ver Ingresos
+              class="btn btn-sm md"
+              rel="tooltip" title="Ver Detalle">
+              <i class="fas fa-address-book"></i>
+            </el-button>
+              <el-button
+              @click.native.prevent="deleteRow(scope.row.id, tabledata)"
+              type="text"
+              size="small"
+              class="btn btn-sm md"
+              rel="tooltip" title="Cerrar Caja">
+              <i class="fas fa-chevron-circle-down"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -129,6 +138,35 @@ export default {
     },
     veringresos(index, rows){
       this.$router.push('/GestionServicio/transporte/' + index)
+    },
+    deleteRow(index, rows) {
+      this.mensajeInfo();
+      this.delete(index);
+    },
+    delete(id) {
+      var url = "/api/transporte/" + id;
+      axios
+        .delete(url)
+        .then(response => {
+          if (response.data == "Eliminado") {
+            this.mensajeSucces("Servicio Finalizado");
+            this.getData();
+            this.loadingTabla = false;
+          } else {
+            if( response.data == "Cerrado"){
+              this.mensajeError("Servicio ya fue finalizado");
+            }
+            else{
+              this.mensajeWarning();
+              this.loadingTabla = false;
+            }
+            
+          }
+        })
+        .catch(e => {
+          this.mensajeWarning();
+          this.loadingTabla = false;
+        });
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -200,28 +238,6 @@ export default {
           this.resetForm("Form");
         });
     },
-    delete(id) {
-      var url = "/api/producto/" + id;
-      axios
-        .delete(url)
-        .then(response => {
-          if (response.data == "Eliminado") {
-            this.mensajeSucces("Se elimino satisfactoriamente el elemento :(");
-            this.getData();
-            this.loadingTabla = false;
-            this.resetForm("Form");
-          } else {
-            this.mensajeWarning();
-            this.loadingTabla = false;
-            this.resetForm("Form");
-          }
-        })
-        .catch(e => {
-          this.mensajeWarning();
-          this.loadingTabla = false;
-          this.resetForm("Form");
-        });
-    },
     getData() {
       var url = "/api/transporte";
       axios
@@ -268,6 +284,13 @@ export default {
         title: "Success",
         message: mensaje,
         type: "success"
+      });
+    },
+    mensajeError(mensaje) {
+      this.$notify({
+        title: "Error",
+        message: mensaje,
+        type: "warning"
       });
     },
     mensajeWarning() {

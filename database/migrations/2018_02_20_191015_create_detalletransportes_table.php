@@ -20,6 +20,8 @@ class CreateDetalletransportesTable extends Migration
             $table->string('num_doc');
             $table->string('descripcion');
             $table->string('monto');
+            $table->enum('tipo_documento', ['Boleta', 'Factura'])->default('Boleta');
+            $table->enum('tipo_declaracion', ['Normal', 'Exceso'])->default('Normal');
             $table->timestamps();
         });
     }

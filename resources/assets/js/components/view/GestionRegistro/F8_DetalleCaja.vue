@@ -31,25 +31,56 @@
               width="50">
             </el-table-column>
             <el-table-column
+              prop="monto_declarado"
+              label="Declarado"
+              width="100">
+            </el-table-column>
+            <el-table-column
+              prop="estado"
+              label="Estado"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="tipo_documento"
+              label="Categoria"
+              width="90">
+            </el-table-column> 
+            <el-table-column
+              prop="numero_documento"
+              label="Documento"
+              width="170">
+            </el-table-column> 
+            <el-table-column
+              prop="tipo_responsable"
+              label="Reponsable"
+              width="100">
+            </el-table-column> 
+            <el-table-column
+              prop="responsable"
+              label="Placa/DNI"
+              width="100">
+            </el-table-column> 
+            <el-table-column
               prop="tipo"
               label="Movimiento"
-              width="170">
+              width="100">
             </el-table-column>        
             <el-table-column
               prop="monto"
               label="Monto"
-              width="170">
+              width="80">
             </el-table-column>
             <el-table-column
               prop="saldo_caja"
               label="Saldo de caja"
-              width="170">
+              width="120">
             </el-table-column>
             <el-table-column
               prop="saldo_final"
               label="Saldo Final de caja"
-              width="240">
+              width="150">
             </el-table-column>
+            
           </el-table>
         </div>
     </div>
